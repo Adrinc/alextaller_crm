@@ -17,14 +17,3 @@ const String lectoresUrl = 'https://lectoresurbanos.com/';
 
 const themeId = String.fromEnvironment('themeId', defaultValue: '2');
 const int mobileSize = 800;
-
-//GoogleMaps
-/* const apiKey = '-plDP_dR7XAGxBSiHgTFyxkxNdjFFHqjQK9ge8b92CE'; */
-
-//Stripe
-/* const stripeKey =
-    'sk_test_51QB3lZRxye2e7dlWyeWcHWmgsJ9kEbIz4lrgJtUIKuC7WEB0HM0njk6Mcgq1q1H9GTs7fByRZdvxHaSAGhzcBqYF00fLxZU9E9';
-const authorizationKey = 'Bearer $stripeKey'; */
-/* 
-const urlStripe = 'https://api.stripe.com';
-const idPricePlanRentaQR = 'price_1QPaDnRxye2e7dlWORf4GoHS'; */
