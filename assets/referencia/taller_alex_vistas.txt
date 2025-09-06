@@ -95,3 +95,29 @@ total_servicios (numeric)
 total_refacciones (numeric)
 total_general (numeric)
 sucursal_id (uuid)
+
+
+-- vw_dashboard_global  --
+
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+total_citas (int) → número total de citas registradas en la sucursal
+citas_hoy (int) → número de citas con inicio en la fecha actual
+total_ordenes (int) → número total de órdenes de servicio creadas en la sucursal
+ordenes_abiertas (int) → número de órdenes en estados activos (no cerradas, no entregadas, no canceladas)
+ordenes_cerradas (int) → número de órdenes en estados cerrada o entregada
+ingresos_totales (numeric) → suma de los montos de pagos con estado “pagado” en esa sucursal
+refacciones_alerta (int) → cantidad de refacciones cuyo stock está igual o por debajo del mínimo
+empleados_activos (int) → número de empleados activos relacionados con esa sucursal
+
+-- vw_mapa_sucursales --
+
+sucursal_id (uuid) → clave interna para drill-down en CRM
+sucursal_nombre (text)
+imagen_url (text) o archivo_id si usas la tabla archivos
+direccion (text)
+lat (numeric)
+lng (numeric)
+empleados_activos (int) → cuántos empleados están ligados a la sucursal
+reportes_totales (int) → puede ser el conteo de órdenes de servicio, inspecciones o bitácora (según definas “reporte”)
+citas_hoy (int) → opcional, para mostrar carga de trabajo inmediata en el mapa

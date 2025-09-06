@@ -1,18 +1,20 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:nethive_neo/helpers/globals.dart';
 import 'package:nethive_neo/models/talleralex/sucursal_model.dart';
+import 'package:nethive_neo/models/talleralex/vw_mapa_sucursales_model.dart';
 
 class SucursalesProvider extends ChangeNotifier {
   List<Sucursal> _sucursales = [];
+  List<VwMapaSucursales> _sucursalesMapa = [];
   Sucursal? _sucursalSeleccionada;
   bool _isLoading = false;
   String? _error;
 
   // Getters
   List<Sucursal> get sucursales => _sucursales;
+  List<VwMapaSucursales> get sucursalesMapa => _sucursalesMapa;
   Sucursal? get sucursalSeleccionada => _sucursalSeleccionada;
   bool get isLoading => _isLoading;
   String? get error => _error;
@@ -32,9 +34,12 @@ class SucursalesProvider extends ChangeNotifier {
           .toList();
 
       // Si no hay sucursales, crear datos de prueba
-      if (_sucursales.isEmpty) {
+      /*     if (_sucursales.isEmpty) {
         await _crearDatosDePrueba();
-      }
+      } */
+
+      // Cargar datos del mapa
+      await cargarSucursalesMapa();
 
       log('✅ Sucursales cargadas: ${_sucursales.length}');
     } catch (e) {
@@ -46,8 +51,40 @@ class SucursalesProvider extends ChangeNotifier {
     }
   }
 
+  // Cargar datos específicos para el mapa
+  Future<void> cargarSucursalesMapa() async {
+    try {
+      final response = await supabaseLU
+          .from('vw_mapa_sucursales')
+          .select('*')
+          .order('sucursal_nombre');
+
+      _sucursalesMapa = (response as List)
+          .map((item) => VwMapaSucursales.fromJson(item))
+          .toList();
+
+      log('✅ Datos de mapa cargados: ${_sucursalesMapa.length}');
+    } catch (e) {
+      log('❌ Error cargando datos de mapa: $e');
+      // Si falla la vista, usar datos básicos de sucursales
+      _sucursalesMapa = _sucursales
+          .map((s) => VwMapaSucursales(
+                sucursalId: s.id,
+                nombre: s.nombre,
+                imagenUrl: s.imagenUrl,
+                direccion: s.direccion,
+                lat: s.lat,
+                lng: s.lng,
+                empleadosActivos: 0,
+                reportesTotales: 0,
+                citasHoy: 0,
+              ))
+          .toList();
+    }
+  }
+
   // Crear datos de prueba
-  Future<void> _crearDatosDePrueba() async {
+/*   Future<void> _crearDatosDePrueba() async {
     try {
       final sucursalesPrueba = [
         {
@@ -58,6 +95,7 @@ class SucursalesProvider extends ChangeNotifier {
           'lat': 19.4326,
           'lng': -99.1332,
           'capacidad_bahias': 8,
+          'imagen_url': 'sucursales/taller-centro.jpg',
         },
         {
           'nombre': 'Taller Alex - Norte',
@@ -67,6 +105,7 @@ class SucursalesProvider extends ChangeNotifier {
           'lat': 19.5051,
           'lng': -99.1470,
           'capacidad_bahias': 6,
+          'imagen_url': 'sucursales/taller-norte.jpg',
         },
         {
           'nombre': 'Taller Alex - Sur',
@@ -76,6 +115,7 @@ class SucursalesProvider extends ChangeNotifier {
           'lat': 19.3687,
           'lng': -99.1640,
           'capacidad_bahias': 10,
+          'imagen_url': 'sucursales/taller-sur.jpg',
         },
         {
           'nombre': 'Taller Alex - Express',
@@ -85,6 +125,7 @@ class SucursalesProvider extends ChangeNotifier {
           'lat': 19.4200,
           'lng': -99.1100,
           'capacidad_bahias': 4,
+          'imagen_url': 'sucursales/taller-express.jpg',
         },
       ];
 
@@ -104,7 +145,7 @@ class SucursalesProvider extends ChangeNotifier {
     } catch (e) {
       log('❌ Error creando datos de prueba: $e');
     }
-  }
+  } */
 
   // Seleccionar una sucursal
   void seleccionarSucursal(Sucursal sucursal) {

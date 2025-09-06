@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nethive_neo/providers/talleralex/sucursales_provider.dart';
 import 'package:nethive_neo/theme/theme.dart';
 import 'package:provider/provider.dart';
+import 'package:nethive_neo/helpers/globals.dart';
 
 class SucursalesTable extends StatelessWidget {
   final SucursalesProvider provider;
@@ -97,7 +98,7 @@ class SucursalesTable extends StatelessWidget {
           field: 'nombre',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.start,
-          width: 200,
+          width: 250,
           type: PlutoColumnType.text(),
           enableEditingMode: false,
           renderer: (rendererContext) {
@@ -106,17 +107,22 @@ class SucursalesTable extends StatelessWidget {
               padding: const EdgeInsets.all(8),
               child: Row(
                 children: [
+                  // Imagen o icono de la sucursal
                   Container(
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
                       color: AppTheme.of(context).primaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color:
+                            AppTheme.of(context).primaryColor.withOpacity(0.3),
+                        width: 1,
+                      ),
                     ),
-                    child: Icon(
-                      Icons.store,
-                      size: 20,
-                      color: AppTheme.of(context).primaryColor,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(7),
+                      child: _buildSucursalImage(context, sucursal),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -155,7 +161,7 @@ class SucursalesTable extends StatelessWidget {
           field: 'telefono',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.center,
-          width: 130,
+          width: 200,
           type: PlutoColumnType.text(),
           enableEditingMode: false,
           renderer: (rendererContext) {
@@ -196,7 +202,7 @@ class SucursalesTable extends StatelessWidget {
           field: 'direccion',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.start,
-          width: 250,
+          width: 350,
           type: PlutoColumnType.text(),
           enableEditingMode: false,
           renderer: (rendererContext) {
@@ -511,6 +517,51 @@ class SucursalesTable extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+
+  Widget _buildSucursalImage(BuildContext context, sucursal) {
+    if (sucursal.imagenUrl != null && sucursal.imagenUrl!.isNotEmpty) {
+      final imageUrl =
+          "${supabaseLU.supabaseUrl}/storage/v1/object/public/taller_alex/imagenes/${sucursal.imagenUrl}";
+
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildDefaultIcon(context);
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                AppTheme.of(context).primaryColor,
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      return _buildDefaultIcon(context);
+    }
+  }
+
+  Widget _buildDefaultIcon(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: AppTheme.of(context).primaryGradient,
+      ),
+      child: Icon(
+        Icons.store,
+        size: 20,
+        color: Colors.white,
+      ),
     );
   }
 }

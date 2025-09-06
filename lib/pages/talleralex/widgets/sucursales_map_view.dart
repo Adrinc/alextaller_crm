@@ -4,8 +4,9 @@ import 'package:flutter_map_cancellable_tile_provider/flutter_map_cancellable_ti
 import 'package:latlong2/latlong.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nethive_neo/providers/talleralex/sucursales_provider.dart';
-import 'package:nethive_neo/models/talleralex/sucursal_model.dart';
+import 'package:nethive_neo/models/talleralex/vw_mapa_sucursales_model.dart';
 import 'package:nethive_neo/theme/theme.dart';
+import 'package:nethive_neo/helpers/globals.dart';
 
 class SucursalesMapView extends StatefulWidget {
   final SucursalesProvider provider;
@@ -70,7 +71,7 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
 
     // Centrar el mapa después de que se construya
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _initializeMap();
+      _initializeMapIfNeeded();
     });
   }
 
@@ -78,16 +79,16 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
   void didUpdateWidget(SucursalesMapView oldWidget) {
     super.didUpdateWidget(oldWidget);
     // Si cambiaron las sucursales, reinicializar el mapa
-    if (oldWidget.provider.sucursales.length !=
-        widget.provider.sucursales.length) {
-      _initializeMap();
+    if (oldWidget.provider.sucursalesMapa.length !=
+        widget.provider.sucursalesMapa.length) {
+      _initializeMapIfNeeded();
     }
   }
 
-  void _initializeMap() async {
+  void _initializeMapIfNeeded() async {
     await Future.delayed(const Duration(milliseconds: 100));
 
-    if (mounted && widget.provider.sucursales.isNotEmpty) {
+    if (mounted && widget.provider.sucursalesMapa.isNotEmpty) {
       _centerMapOnSucursales();
       setState(() {});
     }
@@ -101,26 +102,30 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
   }
 
   void _showTooltipForSucursal(String sucursalId, Offset position) {
-    setState(() {
-      _hoveredSucursalId = sucursalId;
-      _tooltipPosition = position;
-      _showTooltip = true;
-    });
-    _markerAnimationController.forward();
-    _tooltipAnimationController.forward();
+    if (_hoveredSucursalId != sucursalId) {
+      setState(() {
+        _hoveredSucursalId = sucursalId;
+        _tooltipPosition = position;
+        _showTooltip = true;
+      });
+      _markerAnimationController.forward();
+      _tooltipAnimationController.forward();
+    }
   }
 
   void _hideTooltip() {
-    setState(() {
-      _hoveredSucursalId = null;
-      _showTooltip = false;
-    });
-    _markerAnimationController.reverse();
-    _tooltipAnimationController.reverse();
+    if (_hoveredSucursalId != null) {
+      setState(() {
+        _hoveredSucursalId = null;
+        _showTooltip = false;
+      });
+      _markerAnimationController.reverse();
+      _tooltipAnimationController.reverse();
+    }
   }
 
   void _centerMapOnSucursales() {
-    final sucursalesConCoordenadas = widget.provider.sucursales
+    final sucursalesConCoordenadas = widget.provider.sucursalesMapa
         .where((sucursal) => sucursal.lat != null && sucursal.lng != null)
         .toList();
 
@@ -145,7 +150,7 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
     }
   }
 
-  LatLngBounds _calculateBounds(List<Sucursal> sucursales) {
+  LatLngBounds _calculateBounds(List<VwMapaSucursales> sucursales) {
     double minLat = sucursales.first.lat!;
     double maxLat = sucursales.first.lat!;
     double minLng = sucursales.first.lng!;
@@ -168,7 +173,7 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
 
   @override
   Widget build(BuildContext context) {
-    final sucursalesConCoordenadas = widget.provider.sucursales
+    final sucursalesConCoordenadas = widget.provider.sucursalesMapa
         .where((sucursal) => sucursal.lat != null && sucursal.lng != null)
         .toList();
 
@@ -181,23 +186,18 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
         FlutterMap(
           mapController: _mapController,
           options: MapOptions(
-            initialCenter: sucursalesConCoordenadas.isNotEmpty
-                ? LatLng(sucursalesConCoordenadas.first.lat!,
-                    sucursalesConCoordenadas.first.lng!)
-                : const LatLng(
-                    19.4326, -99.1332), // Ciudad de México como fallback
-            initialZoom: 13.0,
+            initialCenter: const LatLng(19.4326, -99.1332), // Ciudad de México
+            initialZoom: 11.0,
             minZoom: 3.0,
             maxZoom: 18.0,
             interactionOptions: const InteractionOptions(
               flags: InteractiveFlag.all,
             ),
-            onTap: (tapPosition, point) => _hideTooltip(),
           ),
           children: [
             TileLayer(
               urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.talleralex.app',
+              userAgentPackageName: 'com.talleralex.crm',
               tileProvider: CancellableNetworkTileProvider(),
             ),
             MarkerLayer(
@@ -205,37 +205,31 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
             ),
           ],
         ),
-
-        // Header del mapa
         _buildMapHeader(),
-
-        // Controles del mapa
         _buildMapControls(),
-
-        // Tooltip animado
         if (_showTooltip && _tooltipPosition != null) _buildAnimatedTooltip(),
       ],
     );
   }
 
   List<Marker> _buildMarkers() {
-    return widget.provider.sucursales
+    return widget.provider.sucursalesMapa
         .where((sucursal) => sucursal.lat != null && sucursal.lng != null)
         .map((sucursal) {
-      final isHovered = _hoveredSucursalId == sucursal.id;
+      final isHovered = _hoveredSucursalId == sucursal.sucursalId;
 
       return Marker(
-        width: 80.0,
-        height: 80.0,
         point: LatLng(sucursal.lat!, sucursal.lng!),
+        width: 80,
+        height: 80,
         child: GestureDetector(
-          onTap: () => context.go('/sucursal/${sucursal.id}'),
+          onTap: () => context.go('/sucursal/${sucursal.sucursalId}'),
           child: MouseRegion(
             onEnter: (event) {
               final RenderBox renderBox =
                   context.findRenderObject() as RenderBox;
               final position = renderBox.globalToLocal(event.position);
-              _showTooltipForSucursal(sucursal.id, position);
+              _showTooltipForSucursal(sucursal.sucursalId, position);
             },
             onExit: (event) => _hideTooltip(),
             child: _buildMarkerContent(sucursal, isHovered),
@@ -245,7 +239,7 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
     }).toList();
   }
 
-  Widget _buildMarkerContent(Sucursal sucursal, bool isHovered) {
+  Widget _buildMarkerContent(VwMapaSucursales sucursal, bool isHovered) {
     return AnimatedBuilder(
       animation: _markerAnimation,
       builder: (context, child) {
@@ -253,47 +247,135 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
 
         return Transform.scale(
           scale: scale,
-          child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppTheme.of(context).primaryColor,
-              boxShadow: [
-                BoxShadow(
-                  color: AppTheme.of(context).primaryColor.withOpacity(0.4),
-                  blurRadius: isHovered ? 20 : 10,
-                  spreadRadius: isHovered ? 5 : 2,
+          child: Stack(
+            children: [
+              // Sombra del marcador
+              Positioned(
+                bottom: 5,
+                left: 15,
+                right: 15,
+                child: Container(
+                  height: 10,
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 5,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-            child: _buildMarkerIcon(isHovered),
+              ),
+              // Marcador principal
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: AppTheme.of(context).primaryColor,
+                    width: 3,
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.of(context).primaryColor.withOpacity(0.3),
+                      blurRadius: 10,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: ClipOval(
+                  child: _buildMarkerImage(sucursal),
+                ),
+              ),
+              // Indicador de actividad (si hay citas hoy)
+              if (sucursal.citasHoy > 0)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: AppTheme.of(context).error,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${sucursal.citasHoy}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         );
       },
     );
   }
 
-  Widget _buildMarkerIcon(bool isHovered) {
+  Widget _buildMarkerImage(VwMapaSucursales sucursal) {
+    if (sucursal.imagenUrl != null && sucursal.imagenUrl!.isNotEmpty) {
+      final imageUrl =
+          "${supabaseLU.supabaseUrl}/storage/v1/object/public/taller_alex/imagenes/${sucursal.imagenUrl}";
+
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildDefaultMarkerIcon();
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                AppTheme.of(context).primaryColor,
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      return _buildDefaultMarkerIcon();
+    }
+  }
+
+  Widget _buildDefaultMarkerIcon() {
     return Container(
-      decoration: const BoxDecoration(
-        shape: BoxShape.circle,
-        color: Colors.white,
+      decoration: BoxDecoration(
+        gradient: AppTheme.of(context).primaryGradient,
       ),
-      margin: const EdgeInsets.all(8),
       child: Icon(
-        Icons.store,
-        size: isHovered ? 32 : 24,
-        color: AppTheme.of(context).primaryColor,
+        Icons.car_repair,
+        color: Colors.white,
+        size: 30,
       ),
     );
   }
 
   Widget _buildAnimatedTooltip() {
-    final sucursal = widget.provider.sucursales
-        .firstWhere((s) => s.id == _hoveredSucursalId);
+    final sucursal = widget.provider.sucursalesMapa
+        .firstWhere((s) => s.sucursalId == _hoveredSucursalId);
 
     return Positioned(
-      left: _tooltipPosition!.dx - 100,
-      top: _tooltipPosition!.dy - 120,
+      left: _tooltipPosition!.dx - 150,
+      top: _tooltipPosition!.dy - 150,
       child: AnimatedBuilder(
         animation: _tooltipAnimation,
         builder: (context, child) {
@@ -301,112 +383,160 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
             scale: _tooltipAnimation.value,
             child: SlideTransition(
               position: _tooltipSlideAnimation,
-              child: Container(
-                width: 200,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppTheme.of(context).primaryBackground,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppTheme.of(context).primaryColor,
-                    width: 2,
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 15,
-                      offset: const Offset(0, 5),
+              child: Opacity(
+                opacity: _tooltipAnimation.value,
+                child: Material(
+                  elevation: 10,
+                  borderRadius: BorderRadius.circular(16),
+                  color: AppTheme.of(context).secondaryBackground,
+                  child: Container(
+                    width: 300,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          AppTheme.of(context).secondaryBackground,
+                          AppTheme.of(context).primaryBackground,
+                        ],
+                      ),
+                      border: Border.all(
+                        color:
+                            AppTheme.of(context).primaryColor.withOpacity(0.3),
+                        width: 2,
+                      ),
                     ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        _buildTooltipIcon(),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            sucursal.nombre,
-                            style: AppTheme.of(context).bodyText1.override(
-                                  fontFamily: 'Poppins',
-                                  color: AppTheme.of(context).primaryText,
-                                  fontWeight: FontWeight.bold,
+                        // Header con imagen
+                        Row(
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppTheme.of(context).primaryColor,
+                                  width: 2,
                                 ),
-                            overflow: TextOverflow.ellipsis,
+                              ),
+                              child: ClipOval(
+                                child: _buildTooltipImage(sucursal),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    sucursal.nombre,
+                                    style: AppTheme.of(context).title3.override(
+                                          fontFamily: 'Poppins',
+                                          color:
+                                              AppTheme.of(context).primaryText,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (sucursal.direccion != null) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      sucursal.direccion!,
+                                      style: AppTheme.of(context)
+                                          .bodyText2
+                                          .override(
+                                            fontFamily: 'Poppins',
+                                            color: AppTheme.of(context)
+                                                .secondaryText,
+                                            fontSize: 12,
+                                          ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Métricas
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildTooltipMetric(
+                                'Empleados',
+                                '${sucursal.empleadosActivos}',
+                                Icons.people,
+                                AppTheme.of(context).primaryColor,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _buildTooltipMetric(
+                                'Citas Hoy',
+                                '${sucursal.citasHoy}',
+                                Icons.calendar_today,
+                                AppTheme.of(context).tertiaryColor,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _buildTooltipMetric(
+                                'Reportes',
+                                '${sucursal.reportesTotales}',
+                                Icons.assessment,
+                                AppTheme.of(context).success,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        const SizedBox(height: 12),
+
+                        // Botón de acción
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            onPressed: () =>
+                                context.go('/sucursal/${sucursal.sucursalId}'),
+                            icon: Icon(
+                              Icons.arrow_forward,
+                              color: AppTheme.of(context).primaryText,
+                              size: 16,
+                            ),
+                            label: Text(
+                              'Ver Sucursal',
+                              style: AppTheme.of(context).bodyText2.override(
+                                    fontFamily: 'Poppins',
+                                    color: AppTheme.of(context).primaryText,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor:
+                                  AppTheme.of(context).primaryColor,
+                              foregroundColor: AppTheme.of(context).primaryText,
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              elevation: 2,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    if (sucursal.direccion != null) ...[
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            size: 14,
-                            color: AppTheme.of(context).secondaryText,
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              sucursal.direccion!,
-                              style: AppTheme.of(context).bodyText2.override(
-                                    fontFamily: 'Poppins',
-                                    color: AppTheme.of(context).secondaryText,
-                                    fontSize: 12,
-                                  ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    if (sucursal.telefono != null) ...[
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.phone,
-                            size: 14,
-                            color: AppTheme.of(context).secondaryText,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            sucursal.telefono!,
-                            style: AppTheme.of(context).bodyText2.override(
-                                  fontFamily: 'Poppins',
-                                  color: AppTheme.of(context).secondaryText,
-                                  fontSize: 12,
-                                ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      decoration: BoxDecoration(
-                        color:
-                            AppTheme.of(context).primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        'Clic para ver detalles',
-                        style: AppTheme.of(context).bodyText2.override(
-                              fontFamily: 'Poppins',
-                              color: AppTheme.of(context).primaryColor,
-                              fontSize: 10,
-                              fontWeight: FontWeight.w600,
-                            ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
@@ -416,18 +546,74 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
     );
   }
 
+  Widget _buildTooltipImage(VwMapaSucursales sucursal) {
+    if (sucursal.imagenUrl != null && sucursal.imagenUrl!.isNotEmpty) {
+      final imageUrl =
+          "${supabaseLU.supabaseUrl}/storage/v1/object/public/taller_alex/imagenes/${sucursal.imagenUrl}";
+
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildTooltipIcon();
+        },
+      );
+    } else {
+      return _buildTooltipIcon();
+    }
+  }
+
   Widget _buildTooltipIcon() {
     return Container(
-      width: 24,
-      height: 24,
       decoration: BoxDecoration(
-        color: AppTheme.of(context).primaryColor,
-        shape: BoxShape.circle,
+        gradient: AppTheme.of(context).primaryGradient,
       ),
       child: const Icon(
-        Icons.store,
-        size: 14,
+        Icons.car_repair,
         color: Colors.white,
+        size: 20,
+      ),
+    );
+  }
+
+  Widget _buildTooltipMetric(
+      String label, String value, IconData icon, Color color) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(
+            icon,
+            color: color,
+            size: 16,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: AppTheme.of(context).bodyText2.override(
+                  fontFamily: 'Poppins',
+                  color: AppTheme.of(context).primaryText,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+          ),
+          Text(
+            label,
+            style: AppTheme.of(context).bodyText2.override(
+                  fontFamily: 'Poppins',
+                  color: AppTheme.of(context).secondaryText,
+                  fontSize: 10,
+                ),
+          ),
+        ],
       ),
     );
   }
@@ -438,12 +624,13 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
       left: 16,
       right: 16,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: AppTheme.of(context).primaryBackground.withOpacity(0.9),
-          borderRadius: BorderRadius.circular(12),
+          color: AppTheme.of(context).secondaryBackground.withOpacity(0.9),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: AppTheme.of(context).primaryColor.withOpacity(0.3),
+            width: 1,
           ),
           boxShadow: [
             BoxShadow(
@@ -466,7 +653,7 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
               style: AppTheme.of(context).bodyText1.override(
                     fontFamily: 'Poppins',
                     color: AppTheme.of(context).primaryText,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
             ),
             const Spacer(),
@@ -474,15 +661,15 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: AppTheme.of(context).primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                '${widget.provider.sucursales.where((s) => s.lat != null && s.lng != null).length} ubicadas',
+                '${widget.provider.sucursalesMapa.length} sucursales',
                 style: AppTheme.of(context).bodyText2.override(
                       fontFamily: 'Poppins',
                       color: AppTheme.of(context).primaryColor,
-                      fontSize: 12,
                       fontWeight: FontWeight.w600,
+                      fontSize: 12,
                     ),
               ),
             ),
@@ -498,37 +685,33 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
       right: 16,
       child: Column(
         children: [
-          // Botón de zoom in
-          Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: FloatingActionButton.small(
-              onPressed: () {
-                final zoom = _mapController.camera.zoom;
-                _mapController.move(_mapController.camera.center, zoom + 1);
-              },
-              backgroundColor: AppTheme.of(context).primaryBackground,
-              foregroundColor: AppTheme.of(context).primaryColor,
-              child: const Icon(Icons.add),
-            ),
-          ),
-          // Botón de zoom out
-          Container(
-            margin: const EdgeInsets.only(bottom: 8),
-            child: FloatingActionButton.small(
-              onPressed: () {
-                final zoom = _mapController.camera.zoom;
-                _mapController.move(_mapController.camera.center, zoom - 1);
-              },
-              backgroundColor: AppTheme.of(context).primaryBackground,
-              foregroundColor: AppTheme.of(context).primaryColor,
-              child: const Icon(Icons.remove),
-            ),
-          ),
-          // Botón de centrar
-          FloatingActionButton.small(
-            onPressed: _centerMapOnSucursales,
-            backgroundColor: AppTheme.of(context).primaryBackground,
+          FloatingActionButton(
+            mini: true,
+            backgroundColor: AppTheme.of(context).secondaryBackground,
             foregroundColor: AppTheme.of(context).primaryColor,
+            onPressed: () => _mapController.move(
+              _mapController.camera.center,
+              _mapController.camera.zoom + 1,
+            ),
+            child: const Icon(Icons.add),
+          ),
+          const SizedBox(height: 8),
+          FloatingActionButton(
+            mini: true,
+            backgroundColor: AppTheme.of(context).secondaryBackground,
+            foregroundColor: AppTheme.of(context).primaryColor,
+            onPressed: () => _mapController.move(
+              _mapController.camera.center,
+              _mapController.camera.zoom - 1,
+            ),
+            child: const Icon(Icons.remove),
+          ),
+          const SizedBox(height: 8),
+          FloatingActionButton(
+            mini: true,
+            backgroundColor: AppTheme.of(context).secondaryBackground,
+            foregroundColor: AppTheme.of(context).primaryColor,
+            onPressed: _centerMapOnSucursales,
             child: const Icon(Icons.my_location),
           ),
         ],
@@ -549,21 +732,14 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppTheme.of(context).primaryColor.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.location_off,
-                size: 64,
-                color: AppTheme.of(context).primaryColor,
-              ),
+            Icon(
+              Icons.location_off,
+              size: 64,
+              color: AppTheme.of(context).secondaryText,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             Text(
-              'No hay sucursales ubicadas',
+              'No hay sucursales con ubicación',
               style: AppTheme.of(context).title3.override(
                     fontFamily: 'Poppins',
                     color: AppTheme.of(context).primaryText,
@@ -572,7 +748,7 @@ class _SucursalesMapViewState extends State<SucursalesMapView>
             ),
             const SizedBox(height: 8),
             Text(
-              'Agrega coordenadas a tus sucursales\npara verlas en el mapa',
+              'Agrega coordenadas a las sucursales para verlas en el mapa',
               style: AppTheme.of(context).bodyText2.override(
                     fontFamily: 'Poppins',
                     color: AppTheme.of(context).secondaryText,
