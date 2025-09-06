@@ -9,7 +9,7 @@ import 'package:nethive_neo/models/configuration.dart';
 import 'package:nethive_neo/theme/theme.dart';
 
 class ThemeConfigProvider extends ChangeNotifier {
-  static const int organizationId = 10;
+  static const int organizationId = 11;
 
   // Estado del configurador
   bool _isLoading = false;

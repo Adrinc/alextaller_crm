@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:nethive_neo/helpers/globals.dart';
-import 'package:nethive_neo/pages/empresa_negocios/empresa_negocios_page.dart';
-import 'package:nethive_neo/pages/infrastructure/infrastructure_layout.dart';
+import 'package:nethive_neo/pages/talleralex/dashboard_global_page.dart';
+import 'package:nethive_neo/pages/talleralex/sucursales_page.dart';
+import 'package:nethive_neo/pages/talleralex/sucursal_layout.dart';
 import 'package:nethive_neo/pages/pages.dart';
 import 'package:nethive_neo/services/navigation_service.dart';
 
@@ -19,13 +20,9 @@ final GoRouter router = GoRouter(
     // If user is not logged in and not in the login page
     if (!loggedIn && !isLoggingIn) return '/login';
 
-    //if user is logged in and in the login page
+    // If user is logged in and in the login page, go to dashboard
     if (loggedIn && isLoggingIn) {
-      if (currentUser!.role.roleId == 14 || currentUser!.role.roleId == 13) {
-        return '/book_page_main';
-      } else {
-        return '/';
-      }
+      return '/';
     }
 
     return null;
@@ -36,23 +33,22 @@ final GoRouter router = GoRouter(
       path: '/',
       name: 'root',
       builder: (BuildContext context, GoRouterState state) {
-        if (currentUser!.role.roleId == 14 || currentUser!.role.roleId == 13) {
-          return Container(
-              color: Colors.amber,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              child: const Center(child: Text('Empresa Negocios')));
-        } else {
-          return const EmpresaNegociosPage();
-        }
+        return const DashboardGlobalPage();
       },
     ),
     GoRoute(
-      path: '/infrastructure/:negocioId',
-      name: 'infrastructure',
+      path: '/sucursales',
+      name: 'sucursales',
       builder: (BuildContext context, GoRouterState state) {
-        final negocioId = state.pathParameters['negocioId']!;
-        return InfrastructureLayout(negocioId: negocioId);
+        return const SucursalesPage();
+      },
+    ),
+    GoRoute(
+      path: '/sucursal/:sucursalId',
+      name: 'sucursal',
+      builder: (BuildContext context, GoRouterState state) {
+        final sucursalId = state.pathParameters['sucursalId']!;
+        return SucursalLayout(sucursalId: sucursalId);
       },
     ),
     GoRoute(

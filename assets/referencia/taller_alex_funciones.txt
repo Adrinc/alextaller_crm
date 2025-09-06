@@ -1,0 +1,229 @@
+-- ==========================================
+-- 🔹 WEB / APP CLIENTE, funciones taller_alex, base de datos
+-- ==========================================
+
+-- 1. Agendar cita
+CREATE OR REPLACE FUNCTION taller_alex.agendar_cita(
+    p_cliente_id uuid,
+    p_vehiculo_id uuid,
+    p_sucursal_id uuid,
+    p_servicios uuid[],
+    p_fecha timestamptz,
+    p_notas text DEFAULT NULL
+) RETURNS uuid
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_cita_id uuid;
+    v_duracion_total int := 0;
+    v_fin timestamptz;
+BEGIN
+    -- calcular duración total
+    SELECT COALESCE(SUM(duracion_min),0)
+    INTO v_duracion_total
+    FROM taller_alex.servicios
+    WHERE id = ANY(p_servicios);
+
+    v_fin := p_fecha + (v_duracion_total || ' minutes')::interval;
+
+    INSERT INTO taller_alex.citas (cliente_id, vehiculo_id, sucursal_id, inicio, fin, estado, notas_cliente)
+    VALUES (p_cliente_id, p_vehiculo_id, p_sucursal_id, p_fecha, v_fin, 'pendiente', p_notas)
+    RETURNING id INTO v_cita_id;
+
+    -- insertar servicios de la cita
+    INSERT INTO taller_alex.cita_servicios (cita_id, servicio_id, precio_aplicado)
+    SELECT v_cita_id, s.id, s.precio_base
+    FROM taller_alex.servicios s
+    WHERE s.id = ANY(p_servicios);
+
+    RETURN v_cita_id;
+END;
+$$;
+
+-- 2. Cancelar cita
+CREATE OR REPLACE FUNCTION taller_alex.cancelar_cita(
+    p_cita_id uuid,
+    p_cliente_id uuid
+) RETURNS void
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE taller_alex.citas
+    SET estado = 'cancelada'
+    WHERE id = p_cita_id AND cliente_id = p_cliente_id;
+END;
+$$;
+
+-- 3. Consultar estado de vehículo (usa última orden)
+CREATE OR REPLACE FUNCTION taller_alex.estado_vehiculo(
+    p_vehiculo_id uuid
+) RETURNS TABLE(
+    orden_id uuid,
+    estado text,
+    fecha_inicio timestamptz,
+    fecha_fin_estimada timestamptz,
+    fecha_fin_real timestamptz
+)
+LANGUAGE sql
+AS $$
+    SELECT os.id, os.estado, os.fecha_inicio, os.fecha_fin_estimada, os.fecha_fin_real
+    FROM taller_alex.ordenes_servicio os
+    JOIN taller_alex.citas c ON c.id = os.cita_id
+    WHERE c.vehiculo_id = p_vehiculo_id
+    ORDER BY os.fecha_inicio DESC
+    LIMIT 1;
+$$;
+
+
+-- ==========================================
+-- 🔹 APP DEL TÉCNICO
+-- ==========================================
+
+-- 4. Tomar asignación de una cita
+CREATE OR REPLACE FUNCTION taller_alex.tomar_asignacion(
+    p_empleado_id uuid,
+    p_cita_id uuid,
+    p_rol taller_alex.rol_asignacion DEFAULT 'responsable'
+) RETURNS uuid
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_asignacion_id uuid;
+BEGIN
+    INSERT INTO taller_alex.asignaciones_tecnico (cita_id, empleado_id, rol)
+    VALUES (p_cita_id, p_empleado_id, p_rol)
+    RETURNING id INTO v_asignacion_id;
+
+    RETURN v_asignacion_id;
+END;
+$$;
+
+-- 5. Iniciar/terminar tarea de servicio
+CREATE OR REPLACE FUNCTION taller_alex.registrar_tiempo(
+    p_orden_item_id uuid,
+    p_empleado_id uuid,
+    p_accion text
+) RETURNS void
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF p_accion = 'iniciar' THEN
+        INSERT INTO taller_alex.tiempos_tecnico (orden_item_id, empleado_id, inicio)
+        VALUES (p_orden_item_id, p_empleado_id, now());
+    ELSIF p_accion = 'terminar' THEN
+        UPDATE taller_alex.tiempos_tecnico
+        SET fin = now(), minutos = EXTRACT(EPOCH FROM (now()-inicio))/60
+        WHERE orden_item_id = p_orden_item_id
+          AND empleado_id = p_empleado_id
+          AND fin IS NULL;
+    END IF;
+END;
+$$;
+
+-- 6. Subir evidencia (foto)
+CREATE OR REPLACE FUNCTION taller_alex.subir_evidencia(
+    p_orden_id uuid,
+    p_archivo_id uuid,
+    p_etiqueta taller_alex.etiqueta_adjuntos_orden
+) RETURNS uuid
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_id uuid;
+BEGIN
+    INSERT INTO taller_alex.adjuntos_orden (orden_id, archivo_id, etiqueta)
+    VALUES (p_orden_id, p_archivo_id, p_etiqueta)
+    RETURNING id INTO v_id;
+
+    RETURN v_id;
+END;
+$$;
+
+
+-- ==========================================
+-- 🔹 CRM / ADMINISTRACIÓN
+-- ==========================================
+
+-- 7. Crear orden desde cita
+CREATE OR REPLACE FUNCTION taller_alex.crear_orden_desde_cita(
+    p_cita_id uuid,
+    p_empleado_id uuid
+) RETURNS uuid
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_orden_id uuid;
+BEGIN
+    INSERT INTO taller_alex.ordenes_servicio (cita_id, empleado_responsable_id, estado, fecha_inicio)
+    VALUES (p_cita_id, p_empleado_id, 'creada', now())
+    RETURNING id INTO v_orden_id;
+
+    INSERT INTO taller_alex.orden_items_servicio (orden_id, servicio_id, descripcion, precio_unitario, cantidad, subtotal)
+    SELECT v_orden_id, cs.servicio_id, s.descripcion, cs.precio_aplicado, 1, cs.precio_aplicado
+    FROM taller_alex.cita_servicios cs
+    JOIN taller_alex.servicios s ON s.id = cs.servicio_id
+    WHERE cs.cita_id = p_cita_id;
+
+    RETURN v_orden_id;
+END;
+$$;
+
+-- 8. Cerrar orden de servicio
+CREATE OR REPLACE FUNCTION taller_alex.cerrar_orden(
+    p_orden_id uuid,
+    p_empleado_id uuid
+) RETURNS void
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    UPDATE taller_alex.ordenes_servicio
+    SET estado = 'cerrada', fecha_fin_real = now()
+    WHERE id = p_orden_id;
+
+    -- opcional: insertar en bitácora
+    INSERT INTO taller_alex.bitacora_eventos (actor_usuario_id, entidad, entidad_id, accion, datos)
+    VALUES (p_empleado_id, 'ordenes_servicio', p_orden_id, 'CERRAR', '{}'::jsonb);
+END;
+$$;
+
+-- 9. Registrar pago
+CREATE OR REPLACE FUNCTION taller_alex.registrar_pago(
+    p_orden_id uuid,
+    p_cliente_id uuid,
+    p_monto numeric,
+    p_metodo taller_alex.metodo_pago,
+    p_sucursal_id uuid
+) RETURNS uuid
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_pago_id uuid;
+BEGIN
+    INSERT INTO taller_alex.pagos (orden_id, cliente_id, monto, metodo, estado, fecha_pago, sucursal_id)
+    VALUES (p_orden_id, p_cliente_id, p_monto, p_metodo, 'pagado', now(), p_sucursal_id)
+    RETURNING id INTO v_pago_id;
+
+    RETURN v_pago_id;
+END;
+$$;
+
+-- 10. Emitir factura
+CREATE OR REPLACE FUNCTION taller_alex.emitir_factura(
+    p_pago_id uuid,
+    p_folio text,
+    p_pdf_url text,
+    p_xml_url text,
+    p_sucursal_id uuid
+) RETURNS uuid
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_factura_id uuid;
+BEGIN
+    INSERT INTO taller_alex.facturas (pago_id, folio, fecha_emision, pdf_url, xml_url, sucursal_id)
+    VALUES (p_pago_id, p_folio, now(), p_pdf_url, p_xml_url, p_sucursal_id)
+    RETURNING id INTO v_factura_id;
+
+    RETURN v_factura_id;
+END;
+$$;

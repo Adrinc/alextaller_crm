@@ -10,9 +10,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:nethive_neo/providers/user_provider.dart';
 import 'package:nethive_neo/providers/visual_state_provider.dart';
 import 'package:nethive_neo/providers/users_provider.dart';
-import 'package:nethive_neo/providers/nethive/empresas_negocios_provider.dart';
-import 'package:nethive_neo/providers/nethive/componentes_provider.dart';
-import 'package:nethive_neo/providers/nethive/navigation_provider.dart';
+import 'package:nethive_neo/providers/talleralex/sucursales_provider.dart';
+import 'package:nethive_neo/providers/talleralex/clientes_provider.dart';
+import 'package:nethive_neo/providers/talleralex/navigation_provider.dart';
 import 'package:nethive_neo/providers/theme_config_provider.dart';
 import 'package:nethive_neo/helpers/globals.dart';
 import 'package:url_strategy/url_strategy.dart';
@@ -33,7 +33,7 @@ void main() async {
     ),
   );
 
-  supabaseLU = SupabaseClient(supabaseUrl, anonKey, schema: 'nethive');
+  supabaseLU = SupabaseClient(supabaseUrl, anonKey, schema: 'taller_alex');
 
   await initGlobals();
 
@@ -46,9 +46,9 @@ void main() async {
         ChangeNotifierProvider(
             create: (context) => VisualStateProvider(context)),
         ChangeNotifierProvider(create: (_) => UsersProvider()),
-        ChangeNotifierProvider(create: (_) => EmpresasNegociosProvider()),
-        ChangeNotifierProvider(create: (_) => ComponentesProvider()),
-        ChangeNotifierProvider(create: (_) => NavigationProvider()),
+        ChangeNotifierProvider(create: (_) => SucursalesProvider()),
+        ChangeNotifierProvider(create: (_) => ClientesProvider()),
+        ChangeNotifierProvider(create: (_) => TallerAlexNavigationProvider()),
         ChangeNotifierProvider(create: (_) => ThemeConfigProvider()),
       ],
       child: const MyApp(),
@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
       builder: (context, themeProvider, child) {
         return Portal(
           child: MaterialApp.router(
-            title: 'NETHIVE',
+            title: 'TALLER ALEX',
             debugShowCheckedModeBanner: false,
             locale: _locale,
             localizationsDelegates: const [

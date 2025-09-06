@@ -1,0 +1,97 @@
+Vistas del taller de Alex
+-- vw_asignaciones_tecnico --
+
+asignacion_id (uuid)
+empleado_id (uuid)
+usuario_empleado_id (uuid)
+rol_asignacion (rol_asignacion)
+cita_id (uuid)
+inicio (timestamptz)
+fin (timestamptz)
+estado (estado_cita)
+cliente_id (uuid)
+cliente_nombre (text)
+vehiculo_id (uuid)
+placa (text)
+marca (text)
+modelo (text)
+anio (integer)
+sucursal_id (uuid)
+sucursal_nombre (text)
+
+-- vw_citas_resumen --
+
+cita_id (uuid)
+inicio (timestamptz)
+fin (timestamptz)
+estado (estado_cita)
+fuente (fuente_cita)
+cliente_id (uuid)
+cliente_nombre (text)
+vehiculo_id (uuid)
+placa (text)
+marca (text)
+modelo (text)
+anio (integer)
+sucursal_id (uuid)
+sucursal_nombre (text)
+servicios (ARRAY)
+
+-- vw_estado_vehiculo --
+
+vehiculo_id (uuid)
+placa (text)
+marca (text)
+modelo (text)
+anio (integer)
+orden_id (uuid)
+estado_orden (estado_orden_servicio)
+fecha_inicio (timestamptz)
+fecha_fin_estimada (timestamptz)
+fecha_fin_real (timestamptz)
+
+-- vw_historial_sucursal --
+
+sucursal_id (uuid)
+sucursal (text)
+orden_id (uuid)
+estado (estado_orden_servicio)
+fecha_inicio (timestamptz)
+fecha_fin_real (timestamptz)
+cliente_id (uuid)
+placa (text)
+marca (text)
+modelo (text)
+
+-- vw_historial_vehiculo --
+
+vehiculo_id (uuid)
+placa (text)
+marca (text)
+modelo (text)
+anio (integer)
+orden_id (uuid)
+numero_orden (text)
+fecha_inicio (timestamptz)
+fecha_fin_real (timestamptz)
+estado (estado_orden_servicio)
+total_servicios (numeric)
+total_refacciones (numeric)
+total_general (numeric)
+
+-- vw_inventario_alerta --
+
+refaccion_id (uuid)
+sucursal_id (uuid)
+sku (text)
+nombre (text)
+existencias (integer)
+minimo_alerta (integer)
+
+-- vw_totales_orden --
+
+orden_id (uuid)
+total_servicios (numeric)
+total_refacciones (numeric)
+total_general (numeric)
+sucursal_id (uuid)

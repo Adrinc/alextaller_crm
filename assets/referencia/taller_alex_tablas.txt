@@ -1,0 +1,367 @@
+Tablas taller alex
+
+
+-- adjuntos_orden --
+
+id (uuid) (PK)
+orden_id (uuid) (FK → ordenes_servicio.id)
+archivo_id (uuid) (FK → archivos.id)
+etiqueta (etiqueta_adjuntos_orden enum: 'antes','durante','despues','firma','otro')
+created_at (timestamptz DEFAULT now())
+
+-- agenda_bahias --
+
+id (uuid) (PK)
+bahia_id (uuid) (FK → bahias_trabajo.id)
+cita_id (uuid, UNIQUE) (FK → citas.id)
+inicio (timestamptz)
+fin (timestamptz)
+
+-- archivos --
+
+id (uuid) (PK)
+bucket (text)
+path (text)
+tipo (text)
+tamano_bytes (int)
+creado_por (uuid) (FK → usuarios.id)
+created_at (timestamptz DEFAULT now())
+
+-- asignaciones_tecnico --
+
+id (uuid) (PK)
+cita_id (uuid) (FK → citas.id)
+empleado_id (uuid) (FK → empleados.id)
+rol (rol_asignacion enum: 'responsable','apoyo')
+created_at (timestamptz DEFAULT now())
+
+-- bahias_trabajo --
+
+id (uuid) (PK)
+sucursal_id (uuid) (FK → sucursales.id)
+nombre (text)
+activa (bool)
+
+-- bitacora_eventos --
+
+id (uuid) (PK)
+actor_usuario_id (uuid) (FK → usuarios.id)
+entidad (text)
+entidad_id (uuid)
+accion (text)
+datos (jsonb)
+created_at (timestamptz DEFAULT now())
+
+-- bloqueos_calendario --
+
+id (uuid) (PK)
+sucursal_id (uuid) (FK → sucursales.id)
+titulo (text)
+motivo (text)
+desde (timestamptz)
+hasta (timestamptz)
+
+-- categorias_servicio --
+id (uuid) (PK)
+nombre (text)
+descripcion (text)
+activa (bool)
+
+-- cita_servicios --
+id (uuid) (PK)
+cita_id (uuid) (FK → citas.id)
+servicio_id (uuid) (FK → servicios.id)
+precio_aplicado (numeric)
+
+-- citas --
+id (uuid) (PK)
+cliente_id (uuid) (FK → clientes.id)
+vehiculo_id (uuid) (FK → vehiculos.id)
+sucursal_id (uuid) (FK → sucursales.id)
+inicio (timestamptz)
+fin (timestamptz)
+estado (estado_cita enum)
+fuente (fuente_cita enum)
+promocion_id (uuid, FK → promociones.id, NULLABLE)
+notas_cliente (text)
+notas_internas (text)
+created_at (timestamptz DEFAULT now())
+updated_at (timestamptz DEFAULT now())
+
+-- clientes --
+id (uuid) (PK)
+usuario_id (uuid) (FK → usuarios.id, NULLABLE)
+nombre (text)
+correo (text, UNIQUE NULLABLE)
+telefono (text, UNIQUE NULLABLE)
+direccion (text)
+rfc (text, NULLABLE)
+notas (text)
+created_at (timestamptz DEFAULT now())
+updated_at (timestamptz DEFAULT now())
+
+-- comentarios --
+id (uuid) (PK)
+ref_tipo (tipo_referencia_comentario enum: 'cita','orden')
+ref_id (uuid)
+autor_usuario_id (uuid) (FK → usuarios.id)
+mensaje (text)
+created_at (timestamptz DEFAULT now())
+
+-- cotizacion_items --
+id (uuid) (PK)
+cotizacion_id (uuid) (FK → cotizaciones.id)
+tipo (tipo_cotizacion_item enum: 'servicio','refaccion','mano_obra','otro')
+referencia_id (uuid, NULLABLE)
+descripcion (text)
+precio_unitario (numeric)
+cantidad (numeric)
+subtotal (numeric)
+
+-- cotizaciones --
+id (uuid) (PK)
+cliente_id (uuid) (FK → clientes.id)
+vehiculo_id (uuid) (FK → vehiculos.id)
+sucursal_id (uuid) (FK → sucursales.id)
+estado (estado_cotizacion enum)
+total (numeric)
+moneda (text)
+vence_en (timestamptz)
+notas (text)
+created_at (timestamptz DEFAULT now())
+updated_at (timestamptz DEFAULT now())
+
+-- cupones --
+id (uuid) (PK)
+codigo (text UNIQUE)
+promocion_id (uuid) (FK → promociones.id)
+limite_uso_global (int)
+usos_realizados (int)
+limite_uso_por_cliente (int)
+activo (bool)
+fecha_inicio (date)
+fecha_fin (date)
+
+-- diagnosticos --
+id (uuid) (PK)
+orden_id (uuid) (FK → ordenes_servicio.id)
+tipo (tipo_diagnostico enum: 'obd','visual','prueba_manejo','otro')
+hallazgos (text)
+codigos_json (jsonb)
+recomendaciones (text)
+created_at (timestamptz DEFAULT now())
+
+-- empleados --
+id (uuid) (PK)
+usuario_id (uuid, UNIQUE) (FK → usuarios.id)
+puesto (puesto_empleado enum)
+activo (bool)
+created_at (timestamptz DEFAULT now())
+updated_at (timestamptz DEFAULT now())
+
+-- empleados_sucursales --
+id (uuid) (PK)
+empleado_id (uuid) (FK → empleados.id)
+sucursal_id (uuid) (FK → sucursales.id)
+activo (bool DEFAULT true)
+fecha_inicio (date DEFAULT current_date)
+fecha_fin (date)
+
+-- facturas --
+id (uuid) (PK)
+pago_id (uuid, UNIQUE) (FK → pagos.id)
+folio (text UNIQUE)
+fecha_emision (timestamptz)
+pdf_url (text)
+xml_url (text)
+sucursal_id (uuid) (FK → sucursales.id)
+created_at (timestamptz DEFAULT now())
+
+-- fotos_vehiculo --
+id (uuid) (PK)
+vehiculo_id (uuid) (FK → vehiculos.id)
+archivo_id (uuid) (FK → archivos.id)
+tipo (tipo_foto enum)
+created_at (timestamptz DEFAULT now())
+
+-- horarios_sucursal --
+id (uuid) (PK)
+sucursal_id (uuid) (FK → sucursales.id)
+dia_semana (int)
+abre (time)
+cierra (time)
+activo (bool)
+
+-- inspecciones --
+id (uuid) (PK)
+orden_id (uuid) (FK → ordenes_servicio.id)
+tipo (tipo_inspeccion enum)
+resultado_json (jsonb)
+firmado_cliente (bool)
+firma_cliente_url (text)
+created_at (timestamptz DEFAULT now())
+
+-- inventario_refacciones --
+id (uuid) (PK)
+sucursal_id (uuid) (FK → sucursales.id)
+sku (text UNIQUE)
+nombre (text)
+descripcion (text)
+proveedor (text)
+precio_unitario (numeric)
+existencias (int)
+minimo_alerta (int)
+activo (bool)
+created_at (timestamptz DEFAULT now())
+updated_at (timestamptz DEFAULT now())
+
+-- notificaciones --
+id (uuid) (PK)
+usuario_id (uuid) (FK → usuarios.id)
+cliente_id (uuid, FK → clientes.id, NULLABLE)
+tipo (tipo_notificacion enum)
+titulo (text)
+cuerpo (text)
+leida (bool)
+enviado_en (timestamptz)
+canal (canal_notificacion enum)
+metadata (jsonb)
+
+-- ocr_placas --
+id (uuid) (PK)
+archivo_id (uuid) (FK → archivos.id ON DELETE CASCADE)
+texto_detectado (text)
+confianza (numeric)
+vehiculo_id (uuid) (FK → vehiculos.id ON DELETE SET NULL)
+revisado (bool DEFAULT false)
+revisado_por (uuid) (FK → usuarios.id ON DELETE SET NULL)
+created_at (timestamptz DEFAULT now())
+
+-- orden_items_servicio --
+id (uuid) (PK)
+orden_id (uuid) (FK → ordenes_servicio.id)
+servicio_id (uuid) (FK → servicios.id)
+descripcion (text)
+precio_unitario (numeric)
+cantidad (numeric)
+subtotal (numeric)
+duracion_real_min (int)
+requiere_aprobacion (bool)
+aprobado (bool)
+aprobado_por (uuid, FK → usuarios.id)
+aprobado_en (timestamptz)
+
+-- orden_refacciones --
+id (uuid) (PK)
+orden_id (uuid) (FK → ordenes_servicio.id)
+refaccion_id (uuid) (FK → inventario_refacciones.id)
+cantidad (numeric)
+precio_unitario (numeric)
+subtotal (numeric)
+
+-- ordenes_servicio --
+id (uuid) (PK)
+cita_id (uuid, UNIQUE) (FK → citas.id)
+numero (text UNIQUE)
+estado (estado_orden_servicio enum)
+empleado_responsable_id (uuid, FK → empleados.id)
+fecha_inicio (timestamptz)
+fecha_fin_estimada (timestamptz)
+fecha_fin_real (timestamptz)
+kilometraje (int)
+nivel_combustible (int)
+observaciones_internas (text)
+created_at (timestamptz DEFAULT now())
+updated_at (timestamptz DEFAULT now())
+
+-- pagos --
+id (uuid) (PK)
+orden_id (uuid) (FK → ordenes_servicio.id)
+cliente_id (uuid) (FK → clientes.id)
+monto (numeric)
+moneda (text)
+metodo (metodo_pago enum)
+estado (estado_pago enum)
+externo_id (text)
+fecha_pago (timestamptz)
+sucursal_id (uuid) (FK → sucursales.id)
+created_at (timestamptz DEFAULT now())
+
+-- promocion_servicios --
+id (uuid) (PK)
+promocion_id (uuid) (FK → promociones.id)
+servicio_id (uuid) (FK → servicios.id)
+
+-- promociones --
+id (uuid) (PK)
+titulo (text)
+descripcion (text)
+tipo_descuento (tipo_descuento enum)
+valor_descuento (numeric)
+fecha_inicio (date)
+fecha_fin (date)
+activo (bool)
+condiciones_json (jsonb)
+sucursal_id (uuid, FK → sucursales.id)
+
+-- push_tokens --
+id (uuid) (PK)
+usuario_id (uuid) (FK → usuarios.id)
+plataforma (plataforma_token enum)
+token (text UNIQUE)
+activo (bool)
+created_at (timestamptz DEFAULT now())
+
+-- servicios --
+id (uuid) (PK)
+categoria_id (uuid, FK → categorias_servicio.id)
+nombre (text)
+descripcion (text)
+precio_base (numeric)
+duracion_min (int)
+activo (bool)
+sucursal_id (uuid, FK → sucursales.id)
+
+-- sucursales --
+id (uuid) (PK)
+nombre (text)
+telefono (text)
+email_contacto (text)
+direccion (text)
+lat (numeric(9,6))
+lng (numeric(9,6))
+capacidad_bahias (int)
+created_at (timestamptz DEFAULT now())
+updated_at (timestamptz DEFAULT now())
+imagen_url (text)
+
+-- tiempos_tecnico --
+id (uuid) (PK)
+orden_item_id (uuid) (FK → orden_items_servicio.id)
+empleado_id (uuid) (FK → empleados.id)
+inicio (timestamptz)
+fin (timestamptz)
+minutos (int)
+
+-- turnos_empleado --
+
+id (uuid) (PK)
+empleado_id (uuid) (FK → empleados.id)
+sucursal_id (uuid) (FK → sucursales.id)
+inicio (timestamptz)
+fin (timestamptz)
+tipo (tipo_turno_empleado enum)
+
+-- vehículos --
+
+id (uuid) (PK)
+cliente_id (uuid) (FK → clientes.id)
+marca (text)
+modelo (text)
+anio (int)
+placa (text)
+vin (text)
+color (text)
+combustible (combustible_tipo enum)
+created_at (timestamptz DEFAULT now())
+updated_at (timestamptz DEFAULT now())

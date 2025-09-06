@@ -73,10 +73,10 @@ abstract class AppTheme {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: <Color>[
-      Color(0xFF1E40AF), // Azul profundo
-      Color(0xFF3B82F6), // Azul brillante
-      Color(0xFF0369A1), // Azul medio
-      Color(0xFF0F172A), // Azul muy oscuro
+      Color(0xFFFF007F), // Rosa fucsia principal
+      Color(0xFFFF2D95), // Rosa brillante
+      Color(0xFFFF4081), // Rosa alternativo
+      Color(0xFF1A1A1A), // Fondo oscuro
     ],
   );
 
@@ -84,10 +84,10 @@ abstract class AppTheme {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: <Color>[
-      Color(0xFF10B981), // Verde esmeralda
-      Color(0xFF059669), // Verde intenso
-      Color(0xFF0D9488), // Verde-azulado
-      Color(0xFF0F172A), // Azul muy oscuro
+      Color(0xFFFF007F), // Rosa fucsia principal
+      Color(0xFFFF2D95), // Rosa brillante
+      Color(0xFFFF6B00), // Naranja de acento
+      Color(0xFF0A0A0A), // Negro de fondo
     ],
   );
 
@@ -96,10 +96,10 @@ abstract class AppTheme {
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: <Color>[
-      Color(0xFF1E40AF), // Azul profundo
-      Color(0xFF3B82F6), // Azul brillante
-      Color(0xFF10B981), // Verde esmeralda
-      Color(0xFF7C3AED), // Púrpura
+      Color(0xFFFF007F), // Rosa fucsia principal
+      Color(0xFFFF6B00), // Naranja de acento
+      Color(0xFFFF2D95), // Rosa brillante
+      Color(0xFFFF4081), // Rosa alternativo
     ],
   );
 
@@ -108,9 +108,9 @@ abstract class AppTheme {
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: <Color>[
-      Color(0xFF0F172A), // Azul muy oscuro
-      Color(0xFF1E293B), // Azul oscuro
-      Color(0xFF334155), // Azul gris
+      Color(0xFF0A0A0A), // Negro de fondo
+      Color(0xFF1A1A1A), // Fondo secundario oscuro
+      Color(0xFF2A2A2A), // Fondo terciario
     ],
   );
 
@@ -140,40 +140,40 @@ abstract class AppTheme {
 
 class LightModeTheme extends AppTheme {
   @override
-  Color primaryColor = const Color(0xFF10B981); // Verde esmeralda principal
+  Color primaryColor = const Color(0xFFFF007F); // Rosa fucsia principal
   @override
-  Color secondaryColor = const Color(0xFF059669); // Verde más oscuro
+  Color secondaryColor = const Color(0xFFFF2D95); // Rosa brillante
   @override
-  Color tertiaryColor = const Color(0xFF0D9488); // Verde azulado
+  Color tertiaryColor = const Color(0xFFFF6B00); // Naranja de acento
   @override
-  Color alternate = const Color(0xFF3B82F6); // Azul de acento
+  Color alternate = const Color(0xFFFF4081); // Rosa alternativo
   @override
-  Color primaryBackground = const Color(0xFF0F172A); // Fondo muy oscuro
+  Color primaryBackground = const Color(0xFF0A0A0A); // Negro de fondo
   @override
   Color secondaryBackground =
-      const Color(0xFF1E293B); // Fondo secundario oscuro
+      const Color(0xFF1A1A1A); // Fondo secundario oscuro
   @override
-  Color tertiaryBackground = const Color(0xFF334155); // Fondo terciario
+  Color tertiaryBackground = const Color(0xFF2A2A2A); // Fondo terciario
   @override
   Color transparentBackground =
-      const Color(0xFF1E293B).withOpacity(.1); // Fondo transparente
+      const Color(0xFF1A1A1A).withOpacity(.1); // Fondo transparente
   @override
   Color primaryText = const Color(0xFFFFFFFF); // Texto blanco
   @override
-  Color secondaryText = const Color(0xFF94A3B8); // Texto gris claro
+  Color secondaryText = const Color(0xFFB0B0B0); // Texto gris claro
   @override
-  Color tertiaryText = const Color(0xFF64748B); // Texto gris medio
+  Color tertiaryText = const Color(0xFF808080); // Texto gris medio
   @override
-  Color hintText = const Color(0xFF475569); // Texto de sugerencia
+  Color hintText = const Color(0xFF606060); // Texto de sugerencia
   @override
-  Color error = const Color(0xFFEF4444); // Rojo para errores
+  Color error = const Color(0xFFFF4444); // Rojo para errores
   @override
-  Color warning = const Color(0xFFF59E0B); // Amarillo para advertencias
+  Color warning = const Color(0xFFFF6B00); // Naranja para advertencias
   @override
-  Color success = const Color(0xFF10B981); // Verde para éxito
+  Color success = const Color(0xFF00FF88); // Verde para éxito
   @override
-  Color formBackground =
-      const Color(0xFF10B981).withOpacity(.05); // Fondo de formularios
+  Color formBackground = const Color(0xFFFF007F)
+      .withOpacity(.05); // Fondo de formularios con rosa fucsia
 
   LightModeTheme({Mode? mode}) {
     if (mode != null) {
@@ -188,40 +188,40 @@ class LightModeTheme extends AppTheme {
 
 class DarkModeTheme extends AppTheme {
   @override
-  Color primaryColor = const Color(0xFF10B981); // Verde esmeralda principal
+  Color primaryColor = const Color(0xFFFF007F); // Rosa fucsia principal
   @override
-  Color secondaryColor = const Color(0xFF059669); // Verde más oscuro
+  Color secondaryColor = const Color(0xFFFF2D95); // Rosa brillante
   @override
-  Color tertiaryColor = const Color(0xFF0D9488); // Verde azulado
+  Color tertiaryColor = const Color(0xFFFF6B00); // Naranja de acento
   @override
-  Color alternate = const Color(0xFF3B82F6); // Azul de acento
+  Color alternate = const Color(0xFFFF4081); // Rosa alternativo
   @override
-  Color primaryBackground = const Color(0xFF0F172A); // Fondo muy oscuro
+  Color primaryBackground = const Color(0xFF0A0A0A); // Negro de fondo
   @override
   Color secondaryBackground =
-      const Color(0xFF1E293B); // Fondo secundario oscuro
+      const Color(0xFF1A1A1A); // Fondo secundario oscuro
   @override
-  Color tertiaryBackground = const Color(0xFF334155); // Fondo terciario
+  Color tertiaryBackground = const Color(0xFF2A2A2A); // Fondo terciario
   @override
   Color transparentBackground =
-      const Color(0xFF1E293B).withOpacity(.3); // Fondo transparente
+      const Color(0xFF1A1A1A).withOpacity(.3); // Fondo transparente
   @override
   Color primaryText = const Color(0xFFFFFFFF); // Texto blanco
   @override
-  Color secondaryText = const Color(0xFF94A3B8); // Texto gris claro
+  Color secondaryText = const Color(0xFFB0B0B0); // Texto gris claro
   @override
-  Color tertiaryText = const Color(0xFF64748B); // Texto gris medio
+  Color tertiaryText = const Color(0xFF808080); // Texto gris medio
   @override
-  Color hintText = const Color(0xFF475569); // Texto de sugerencia
+  Color hintText = const Color(0xFF606060); // Texto de sugerencia
   @override
-  Color error = const Color(0xFFEF4444); // Rojo para errores
+  Color error = const Color(0xFFFF4444); // Rojo para errores
   @override
-  Color warning = const Color(0xFFF59E0B); // Amarillo para advertencias
+  Color warning = const Color(0xFFFF6B00); // Naranja para advertencias
   @override
-  Color success = const Color(0xFF10B981); // Verde para éxito
+  Color success = const Color(0xFF00FF88); // Verde para éxito
   @override
-  Color formBackground =
-      const Color(0xFF10B981).withOpacity(.1); // Fondo de formularios
+  Color formBackground = const Color(0xFFFF007F)
+      .withOpacity(.1); // Fondo de formularios con rosa fucsia
 
   // Nuevos gradientes modernos
   @override
