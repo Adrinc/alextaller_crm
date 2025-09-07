@@ -69,7 +69,7 @@ class SucursalesTable extends StatelessWidget {
           field: 'numero',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.center,
-          width: 60,
+          width: 80,
           type: PlutoColumnType.text(),
           enableEditingMode: false,
           backgroundColor: AppTheme.of(context).primaryColor,
@@ -98,6 +98,7 @@ class SucursalesTable extends StatelessWidget {
           field: 'nombre',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.start,
+          minWidth: 200,
           width: 250,
           type: PlutoColumnType.text(),
           enableEditingMode: false,
@@ -110,8 +111,8 @@ class SucursalesTable extends StatelessWidget {
                 children: [
                   // Imagen o icono de la sucursal
                   Container(
-                    width: 40,
-                    height: 40,
+                    width: 60,
+                    height: 60,
                     decoration: BoxDecoration(
                       color: AppTheme.of(context).primaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
@@ -162,7 +163,7 @@ class SucursalesTable extends StatelessWidget {
           field: 'telefono',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.center,
-          width: 200,
+          minWidth: 200,
           type: PlutoColumnType.text(),
           enableEditingMode: false,
           renderer: (rendererContext) {
@@ -203,7 +204,7 @@ class SucursalesTable extends StatelessWidget {
           field: 'empleados_activos',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.center,
-          width: 140,
+          minWidth: 140,
           type: PlutoColumnType.number(),
           enableEditingMode: false,
           renderer: (rendererContext) {
@@ -256,7 +257,7 @@ class SucursalesTable extends StatelessWidget {
           field: 'citas_hoy',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.center,
-          width: 100,
+          minWidth: 100,
           type: PlutoColumnType.number(),
           enableEditingMode: false,
           renderer: (rendererContext) {
@@ -298,7 +299,7 @@ class SucursalesTable extends StatelessWidget {
           field: 'reportes_totales',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.center,
-          width: 100,
+          /*  width: 100, */
           type: PlutoColumnType.number(),
           enableEditingMode: false,
           renderer: (rendererContext) {
@@ -340,6 +341,7 @@ class SucursalesTable extends StatelessWidget {
           field: 'direccion',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.start,
+          minWidth: 300,
           width: 350,
           type: PlutoColumnType.text(),
           enableEditingMode: false,
@@ -376,7 +378,8 @@ class SucursalesTable extends StatelessWidget {
           field: 'capacidad_bahias',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.center,
-          width: 80,
+          minWidth: 80,
+          width: 100,
           type: PlutoColumnType.number(),
           enableEditingMode: false,
           renderer: (rendererContext) {
@@ -406,7 +409,7 @@ class SucursalesTable extends StatelessWidget {
           field: 'coordenadas',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.center,
-          width: 180,
+          minWidth: 180,
           type: PlutoColumnType.text(),
           enableEditingMode: false,
           renderer: (rendererContext) {
@@ -479,11 +482,74 @@ class SucursalesTable extends StatelessWidget {
           },
         ),
         PlutoColumn(
+          title: 'Gestión',
+          field: 'gestion',
+          titleTextAlign: PlutoColumnTextAlign.center,
+          textAlign: PlutoColumnTextAlign.center,
+          minWidth: 100,
+          type: PlutoColumnType.text(),
+          enableEditingMode: false,
+          enableSorting: false,
+          enableColumnDrag: false,
+          enableContextMenu: false,
+          renderer: (rendererContext) {
+            final sucursalMapa =
+                provider.sucursalesMapa[rendererContext.rowIdx];
+            return Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(4),
+              child: Tooltip(
+                message: 'Gestionar sucursal',
+                child: InkWell(
+                  onTap: () =>
+                      context.go('/sucursal/${sucursalMapa.sucursalId}'),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.of(context).primaryGradient,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.of(context)
+                              .primaryColor
+                              .withOpacity(0.3),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Icon(
+                          Icons.settings,
+                          size: 16,
+                          color: Colors.white,
+                        ),
+                        const SizedBox(width: 4),
+                        const Text(
+                          'Gestión',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+        PlutoColumn(
           title: 'Acciones',
           field: 'acciones',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.center,
-          width: 120,
+          minWidth: 120,
           type: PlutoColumnType.text(),
           enableEditingMode: false,
           enableSorting: false,
@@ -500,10 +566,10 @@ class SucursalesTable extends StatelessWidget {
                 children: [
                   // Botón ver/editar
                   Tooltip(
-                    message: 'Ver sucursal',
+                    message: 'Ver detalles',
                     child: InkWell(
-                      onTap: () =>
-                          context.go('/sucursal/${sucursalMapa.sucursalId}'),
+                      onTap: () => _showEditDialog(context,
+                          sucursalMapa.sucursalId, sucursalMapa.nombre),
                       borderRadius: BorderRadius.circular(4),
                       child: Container(
                         padding: const EdgeInsets.all(6),
@@ -643,12 +709,14 @@ class SucursalesTable extends StatelessWidget {
                     SnackBar(
                       content: Text(
                         success
-                            ? 'Sucursal eliminada correctamente'
-                            : 'Error al eliminar la sucursal',
+                            ? '✅ Sucursal "$nombre" eliminada exitosamente'
+                            : '❌ Error al eliminar la sucursal',
+                        style: const TextStyle(color: Colors.white),
                       ),
                       backgroundColor: success
                           ? AppTheme.of(context).success
                           : AppTheme.of(context).error,
+                      behavior: SnackBarBehavior.floating,
                     ),
                   );
                 }

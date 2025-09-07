@@ -4,6 +4,7 @@ import 'package:nethive_neo/providers/talleralex/sucursales_provider.dart';
 import 'package:nethive_neo/providers/talleralex/navigation_provider.dart';
 import 'package:nethive_neo/theme/theme.dart';
 import 'package:nethive_neo/helpers/globals.dart';
+import 'package:nethive_neo/pages/talleralex/widgets/add_sucursal_dialog.dart';
 
 class SucursalSelectorSidebar extends StatefulWidget {
   final SucursalesProvider provider;
@@ -560,18 +561,14 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
   }
 
   void _showAddSucursalDialog(BuildContext context) {
-    // TODO: Implementar diálogo para agregar sucursal
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Diálogo para agregar sucursal en desarrollo',
-          style: AppTheme.of(context).bodyText1.override(
-                fontFamily: 'Poppins',
-                color: Colors.white,
-              ),
-        ),
-        backgroundColor: AppTheme.of(context).primaryColor,
-      ),
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AddSucursalDialog(
+          provider: widget.provider,
+        );
+      },
     );
   }
 }

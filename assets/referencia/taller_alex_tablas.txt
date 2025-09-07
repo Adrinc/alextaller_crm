@@ -334,6 +334,7 @@ capacidad_bahias (int)
 created_at (timestamptz DEFAULT now())
 updated_at (timestamptz DEFAULT now())
 imagen_url (text)
+activa (bool)
 
 -- tiempos_tecnico --
 id (uuid) (PK)

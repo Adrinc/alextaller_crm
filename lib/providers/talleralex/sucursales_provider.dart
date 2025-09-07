@@ -1,6 +1,10 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:pluto_grid/pluto_grid.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:intl/intl.dart';
+import 'dart:typed_data';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:nethive_neo/helpers/globals.dart';
 import 'package:nethive_neo/models/talleralex/sucursal_model.dart';
@@ -25,6 +29,15 @@ class SucursalesProvider extends ChangeNotifier {
   // Lista de filas para PlutoGrid
   List<PlutoRow> sucursalesRows = [];
 
+  // Variables para formularios de imagen
+  String? imagenFileName;
+  Uint8List? imagenToUpload;
+
+  SucursalesProvider() {
+    cargarSucursales();
+    cargarSucursalesMapa();
+  }
+
   // Cargar todas las sucursales
   Future<void> cargarSucursales() async {
     try {
@@ -32,8 +45,11 @@ class SucursalesProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final response =
-          await supabaseLU.from('sucursales').select('*').order('nombre');
+      final response = await supabaseLU
+          .from('sucursales')
+          .select('*')
+          .eq('activa', true) // Solo cargar sucursales activas
+          .order('nombre');
 
       _sucursales = (response as List)
           .map((sucursal) => Sucursal.fromJson(sucursal))
@@ -58,10 +74,18 @@ class SucursalesProvider extends ChangeNotifier {
   // Cargar datos específicos para el mapa
   Future<void> cargarSucursalesMapa() async {
     try {
-      final response = await supabaseLU
-          .from('vw_mapa_sucursales')
-          .select('*')
-          .order('sucursal_nombre');
+      // Si tenemos sucursales cargadas, filtrar por IDs activos
+      List<String> sucursalesActivasIds = _sucursales.map((s) => s.id).toList();
+
+      PostgrestFilterBuilder query =
+          supabaseLU.from('vw_mapa_sucursales').select('*');
+
+      // Solo filtrar si tenemos IDs de sucursales activas
+      if (sucursalesActivasIds.isNotEmpty) {
+        query = query.in_('sucursal_id', sucursalesActivasIds);
+      }
+
+      final response = await query.order('sucursal_nombre');
 
       _sucursalesMapa = (response as List)
           .map((item) => VwMapaSucursales.fromJson(item))
@@ -113,6 +137,7 @@ class SucursalesProvider extends ChangeNotifier {
             value: sucursal.lat != null && sucursal.lng != null
                 ? 'Ubicado'
                 : 'Sin ubicar'),
+        'gestion': PlutoCell(value: sucursal.sucursalId),
         'acciones': PlutoCell(value: sucursal.sucursalId),
       }));
     }
@@ -148,13 +173,12 @@ class SucursalesProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      final response =
-          await supabaseLU.from('sucursales').insert(datos).select().single();
+      await supabaseLU.from('sucursales').insert(datos);
 
-      final nuevaSucursal = Sucursal.fromJson(response);
-      _sucursales.add(nuevaSucursal);
+      // Recargar todos los datos para asegurar consistencia
+      await cargarSucursales();
 
-      log('✅ Sucursal creada: ${nuevaSucursal.nombre}');
+      log('✅ Sucursal creada');
       return true;
     } catch (e) {
       _error = 'Error al crear sucursal: $e';
@@ -201,18 +225,27 @@ class SucursalesProvider extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
+      // Actualizar el campo activa a false en la base de datos
       await supabaseLU
           .from('sucursales')
           .update({'activa': false}).eq('id', id);
 
+      // Eliminar de la lista local de sucursales
       _sucursales.removeWhere((s) => s.id == id);
+
+      // Eliminar de la lista local de sucursales mapa
+      _sucursalesMapa.removeWhere((s) => s.sucursalId == id);
 
       // Si era la sucursal seleccionada, limpiar selección
       if (_sucursalSeleccionada?.id == id) {
         _sucursalSeleccionada = null;
+        _sucursalSeleccionadaId = null;
       }
 
-      log('✅ Sucursal eliminada: $id');
+      // Reconstruir las filas de PlutoGrid
+      _buildSucursalesRows();
+
+      log('✅ Sucursal desactivada: $id');
       return true;
     } catch (e) {
       _error = 'Error al eliminar sucursal: $e';
@@ -222,5 +255,49 @@ class SucursalesProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  // Métodos para manejo de archivos
+  Future<void> selectImagen() async {
+    imagenFileName = null;
+    imagenToUpload = null;
+
+    FilePickerResult? picker = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'png', 'jpeg'],
+    );
+
+    if (picker != null) {
+      var now = DateTime.now();
+      var formatter = DateFormat('yyyyMMddHHmmss');
+      var timestamp = formatter.format(now);
+
+      imagenFileName = 'sucursal-$timestamp-${picker.files.single.name}';
+      imagenToUpload = picker.files.single.bytes;
+
+      // Notificar inmediatamente después de seleccionar
+      notifyListeners();
+    }
+  }
+
+  Future<String?> uploadImagen() async {
+    if (imagenToUpload != null && imagenFileName != null) {
+      await supabaseLU.storage.from('taller_alex/imagenes').uploadBinary(
+            imagenFileName!,
+            imagenToUpload!,
+            fileOptions: const FileOptions(
+              cacheControl: '3600',
+              upsert: false,
+            ),
+          );
+      return imagenFileName;
+    }
+    return null;
+  }
+
+  void resetFormData() {
+    imagenFileName = null;
+    imagenToUpload = null;
+    notifyListeners();
   }
 }
