@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:nethive_neo/providers/talleralex/sucursales_provider.dart';
 import 'package:nethive_neo/providers/talleralex/navigation_provider.dart';
 import 'package:nethive_neo/theme/theme.dart';
+import 'package:nethive_neo/helpers/globals.dart';
 
 class SucursalSelectorSidebar extends StatefulWidget {
   final SucursalesProvider provider;
@@ -407,8 +408,10 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
               children: [
                 Row(
                   children: [
+                    // Imagen o icono de la sucursal
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      width: 40,
+                      height: 40,
                       decoration: BoxDecoration(
                         color: isSelected
                             ? AppTheme.of(context).primaryColor
@@ -416,13 +419,21 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
                                 .primaryColor
                                 .withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color: AppTheme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                            : null,
                       ),
-                      child: Icon(
-                        Icons.store,
-                        size: 16,
-                        color: isSelected
-                            ? Colors.white
-                            : AppTheme.of(context).primaryColor,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: _buildSucursalImage(sucursal, isSelected),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -490,6 +501,60 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSucursalImage(dynamic sucursal, bool isSelected) {
+    if (sucursal.imagenUrl != null && sucursal.imagenUrl!.isNotEmpty) {
+      final imageUrl =
+          "${supabaseLU.supabaseUrl}/storage/v1/object/public/taller_alex/imagenes/${sucursal.imagenUrl}";
+
+      return Image.network(
+        imageUrl,
+        fit: BoxFit.cover,
+        width: 40,
+        height: 40,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildDefaultIcon(isSelected);
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return Center(
+            child: CircularProgressIndicator(
+              value: loadingProgress.expectedTotalBytes != null
+                  ? loadingProgress.cumulativeBytesLoaded /
+                      loadingProgress.expectedTotalBytes!
+                  : null,
+              strokeWidth: 2,
+              valueColor: AlwaysStoppedAnimation<Color>(
+                isSelected ? Colors.white : AppTheme.of(context).primaryColor,
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      return _buildDefaultIcon(isSelected);
+    }
+  }
+
+  Widget _buildDefaultIcon(bool isSelected) {
+    return Container(
+      width: 40,
+      height: 40,
+      decoration: BoxDecoration(
+        gradient: isSelected
+            ? LinearGradient(
+                colors: [Colors.white.withOpacity(0.9), Colors.white],
+              )
+            : AppTheme.of(context).primaryGradient,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(
+        Icons.car_repair,
+        size: 20,
+        color: isSelected ? AppTheme.of(context).primaryColor : Colors.white,
       ),
     );
   }

@@ -121,3 +121,6 @@ lng (numeric)
 empleados_activos (int) → cuántos empleados están ligados a la sucursal
 reportes_totales (int) → puede ser el conteo de órdenes de servicio, inspecciones o bitácora (según definas “reporte”)
 citas_hoy (int) → opcional, para mostrar carga de trabajo inmediata en el mapa
+telefono (text)
+email_contacto (text)
+capacidad_bahias (int)

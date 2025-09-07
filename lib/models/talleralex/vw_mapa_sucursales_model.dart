@@ -8,6 +8,9 @@ class VwMapaSucursales {
   final int empleadosActivos;
   final int reportesTotales;
   final int citasHoy;
+  final String? telefono;
+  final String? emailContacto;
+  final int capacidadBahias;
 
   VwMapaSucursales({
     required this.sucursalId,
@@ -19,6 +22,9 @@ class VwMapaSucursales {
     required this.empleadosActivos,
     required this.reportesTotales,
     required this.citasHoy,
+    this.telefono,
+    this.emailContacto,
+    required this.capacidadBahias,
   });
 
   factory VwMapaSucursales.fromJson(Map<String, dynamic> json) {
@@ -32,6 +38,9 @@ class VwMapaSucursales {
       empleadosActivos: json['empleados_activos'] as int? ?? 0,
       reportesTotales: json['reportes_totales'] as int? ?? 0,
       citasHoy: json['citas_hoy'] as int? ?? 0,
+      telefono: json['telefono'] as String?,
+      emailContacto: json['email_contacto'] as String?,
+      capacidadBahias: json['capacidad_bahias'] as int? ?? 0,
     );
   }
 
@@ -46,12 +55,15 @@ class VwMapaSucursales {
       'empleados_activos': empleadosActivos,
       'reportes_totales': reportesTotales,
       'citas_hoy': citasHoy,
+      'telefono': telefono,
+      'email_contacto': emailContacto,
+      'capacidad_bahias': capacidadBahias,
     };
   }
 
   @override
   String toString() {
-    return 'VwMapaSucursales(sucursalId: $sucursalId, nombre: $nombre, empleadosActivos: $empleadosActivos, citasHoy: $citasHoy)';
+    return 'VwMapaSucursales(sucursalId: $sucursalId, nombre: $nombre, empleadosActivos: $empleadosActivos, citasHoy: $citasHoy, capacidadBahias: $capacidadBahias)';
   }
 
   @override

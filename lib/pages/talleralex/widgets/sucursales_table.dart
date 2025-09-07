@@ -102,7 +102,8 @@ class SucursalesTable extends StatelessWidget {
           type: PlutoColumnType.text(),
           enableEditingMode: false,
           renderer: (rendererContext) {
-            final sucursal = provider.sucursales[rendererContext.rowIdx];
+            final sucursalMapa =
+                provider.sucursalesMapa[rendererContext.rowIdx];
             return Container(
               padding: const EdgeInsets.all(8),
               child: Row(
@@ -122,7 +123,7 @@ class SucursalesTable extends StatelessWidget {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(7),
-                      child: _buildSucursalImage(context, sucursal),
+                      child: _buildSucursalImage(context, sucursalMapa),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -132,16 +133,16 @@ class SucursalesTable extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          sucursal.nombre,
+                          sucursalMapa.nombre,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: AppTheme.of(context).primaryText,
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (sucursal.emailContacto != null)
+                        if (sucursalMapa.emailContacto != null)
                           Text(
-                            sucursal.emailContacto!,
+                            sucursalMapa.emailContacto!,
                             style: TextStyle(
                               fontSize: 12,
                               color: AppTheme.of(context).secondaryText,
@@ -189,6 +190,143 @@ class SucursalesTable extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 12,
                         color: AppTheme.of(context).primaryText,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        PlutoColumn(
+          title: 'Empleados Activos',
+          field: 'empleados_activos',
+          titleTextAlign: PlutoColumnTextAlign.center,
+          textAlign: PlutoColumnTextAlign.center,
+          width: 140,
+          type: PlutoColumnType.number(),
+          enableEditingMode: false,
+          renderer: (rendererContext) {
+            final empleados = rendererContext.cell.value?.toString() ?? '0';
+            final numEmpleados = int.tryParse(empleados) ?? 0;
+            Color badgeColor;
+            if (numEmpleados >= 10) {
+              badgeColor = AppTheme.of(context).success;
+            } else if (numEmpleados >= 5) {
+              badgeColor = AppTheme.of(context).warning;
+            } else {
+              badgeColor = AppTheme.of(context).error;
+            }
+
+            return Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(8),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: badgeColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: badgeColor.withOpacity(0.3)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.people,
+                      size: 14,
+                      color: badgeColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      empleados,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: badgeColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        PlutoColumn(
+          title: 'Citas Hoy',
+          field: 'citas_hoy',
+          titleTextAlign: PlutoColumnTextAlign.center,
+          textAlign: PlutoColumnTextAlign.center,
+          width: 100,
+          type: PlutoColumnType.number(),
+          enableEditingMode: false,
+          renderer: (rendererContext) {
+            final citas = rendererContext.cell.value?.toString() ?? '0';
+            return Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(8),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.event,
+                      size: 14,
+                      color: AppTheme.of(context).primaryColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      citas,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.of(context).primaryColor,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        PlutoColumn(
+          title: 'Reportes',
+          field: 'reportes_totales',
+          titleTextAlign: PlutoColumnTextAlign.center,
+          textAlign: PlutoColumnTextAlign.center,
+          width: 100,
+          type: PlutoColumnType.number(),
+          enableEditingMode: false,
+          renderer: (rendererContext) {
+            final reportes = rendererContext.cell.value?.toString() ?? '0';
+            return Container(
+              alignment: Alignment.center,
+              padding: const EdgeInsets.all(8),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.of(context).tertiaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.assignment,
+                      size: 14,
+                      color: AppTheme.of(context).tertiaryColor,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      reportes,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.of(context).tertiaryColor,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
@@ -268,47 +406,74 @@ class SucursalesTable extends StatelessWidget {
           field: 'coordenadas',
           titleTextAlign: PlutoColumnTextAlign.center,
           textAlign: PlutoColumnTextAlign.center,
-          width: 130,
+          width: 180,
           type: PlutoColumnType.text(),
           enableEditingMode: false,
           renderer: (rendererContext) {
-            final sucursal = provider.sucursales[rendererContext.rowIdx];
-            final hasCoords = sucursal.lat != null && sucursal.lng != null;
+            final sucursalMapa =
+                provider.sucursalesMapa[rendererContext.rowIdx];
+            final hasCoords =
+                sucursalMapa.lat != null && sucursalMapa.lng != null;
 
             return Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.all(8),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: hasCoords
-                      ? AppTheme.of(context).success.withOpacity(0.1)
-                      : AppTheme.of(context).warning.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      hasCoords ? Icons.gps_fixed : Icons.gps_off,
-                      size: 14,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Estado de coordenadas
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
                       color: hasCoords
-                          ? AppTheme.of(context).success
-                          : AppTheme.of(context).warning,
+                          ? AppTheme.of(context).success.withOpacity(0.1)
+                          : AppTheme.of(context).warning.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    const SizedBox(width: 4),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          hasCoords ? Icons.gps_fixed : Icons.gps_off,
+                          size: 12,
+                          color: hasCoords
+                              ? AppTheme.of(context).success
+                              : AppTheme.of(context).warning,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          hasCoords ? 'Ubicado' : 'Sin ubicar',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            color: hasCoords
+                                ? AppTheme.of(context).success
+                                : AppTheme.of(context).warning,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Coordenadas detalladas
+                  if (hasCoords) ...[
+                    const SizedBox(height: 4),
                     Text(
-                      hasCoords ? 'Ubicado' : 'Sin ubicar',
+                      'Lat: ${sucursalMapa.lat!.toStringAsFixed(4)}',
                       style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: hasCoords
-                            ? AppTheme.of(context).success
-                            : AppTheme.of(context).warning,
+                        fontSize: 10,
+                        color: AppTheme.of(context).secondaryText,
+                      ),
+                    ),
+                    Text(
+                      'Lng: ${sucursalMapa.lng!.toStringAsFixed(4)}',
+                      style: TextStyle(
+                        fontSize: 10,
+                        color: AppTheme.of(context).secondaryText,
                       ),
                     ),
                   ],
-                ),
+                ],
               ),
             );
           },
@@ -325,7 +490,8 @@ class SucursalesTable extends StatelessWidget {
           enableColumnDrag: false,
           enableContextMenu: false,
           renderer: (rendererContext) {
-            final sucursal = provider.sucursales[rendererContext.rowIdx];
+            final sucursalMapa =
+                provider.sucursalesMapa[rendererContext.rowIdx];
             return Container(
               alignment: Alignment.center,
               padding: const EdgeInsets.all(4),
@@ -336,7 +502,8 @@ class SucursalesTable extends StatelessWidget {
                   Tooltip(
                     message: 'Ver sucursal',
                     child: InkWell(
-                      onTap: () => context.go('/sucursal/${sucursal.id}'),
+                      onTap: () =>
+                          context.go('/sucursal/${sucursalMapa.sucursalId}'),
                       borderRadius: BorderRadius.circular(4),
                       child: Container(
                         padding: const EdgeInsets.all(6),
@@ -359,8 +526,8 @@ class SucursalesTable extends StatelessWidget {
                   Tooltip(
                     message: 'Editar sucursal',
                     child: InkWell(
-                      onTap: () => _showEditDialog(
-                          context, sucursal.id, sucursal.nombre),
+                      onTap: () => _showEditDialog(context,
+                          sucursalMapa.sucursalId, sucursalMapa.nombre),
                       borderRadius: BorderRadius.circular(4),
                       child: Container(
                         padding: const EdgeInsets.all(6),
@@ -383,8 +550,8 @@ class SucursalesTable extends StatelessWidget {
                   Tooltip(
                     message: 'Eliminar sucursal',
                     child: InkWell(
-                      onTap: () => _showDeleteDialog(
-                          context, sucursal.id, sucursal.nombre),
+                      onTap: () => _showDeleteDialog(context,
+                          sucursalMapa.sucursalId, sucursalMapa.nombre),
                       borderRadius: BorderRadius.circular(4),
                       child: Container(
                         padding: const EdgeInsets.all(6),
@@ -406,7 +573,7 @@ class SucursalesTable extends StatelessWidget {
           },
         ),
       ],
-      rows: _buildRows(),
+      rows: provider.sucursalesRows,
       onLoaded: (event) {
         // Si necesitas acceso al stateManager, puedes guardarlo aquí
       },
@@ -415,28 +582,6 @@ class SucursalesTable extends StatelessWidget {
         return PlutoPagination(stateManager);
       },
     );
-  }
-
-  List<PlutoRow> _buildRows() {
-    return provider.sucursales.asMap().entries.map((entry) {
-      final index = entry.key;
-      final sucursal = entry.value;
-
-      return PlutoRow(
-        cells: {
-          'numero': PlutoCell(value: (index + 1).toString()),
-          'nombre': PlutoCell(value: sucursal.nombre),
-          'telefono': PlutoCell(value: sucursal.telefono ?? ''),
-          'direccion': PlutoCell(value: sucursal.direccion ?? ''),
-          'capacidad_bahias': PlutoCell(value: sucursal.capacidadBahias ?? 0),
-          'coordenadas': PlutoCell(
-              value: sucursal.lat != null && sucursal.lng != null
-                  ? 'Ubicado'
-                  : 'Sin ubicar'),
-          'acciones': PlutoCell(value: 'acciones'),
-        },
-      );
-    }).toList();
   }
 
   void _showEditDialog(BuildContext context, String sucursalId, String nombre) {

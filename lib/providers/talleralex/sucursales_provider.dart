@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:flutter/material.dart';
+import 'package:pluto_grid/pluto_grid.dart';
 
 import 'package:nethive_neo/helpers/globals.dart';
 import 'package:nethive_neo/models/talleralex/sucursal_model.dart';
@@ -9,6 +10,7 @@ class SucursalesProvider extends ChangeNotifier {
   List<Sucursal> _sucursales = [];
   List<VwMapaSucursales> _sucursalesMapa = [];
   Sucursal? _sucursalSeleccionada;
+  String? _sucursalSeleccionadaId; // Para el mapa
   bool _isLoading = false;
   String? _error;
 
@@ -16,8 +18,12 @@ class SucursalesProvider extends ChangeNotifier {
   List<Sucursal> get sucursales => _sucursales;
   List<VwMapaSucursales> get sucursalesMapa => _sucursalesMapa;
   Sucursal? get sucursalSeleccionada => _sucursalSeleccionada;
+  String? get sucursalSeleccionadaId => _sucursalSeleccionadaId;
   bool get isLoading => _isLoading;
   String? get error => _error;
+
+  // Lista de filas para PlutoGrid
+  List<PlutoRow> sucursalesRows = [];
 
   // Cargar todas las sucursales
   Future<void> cargarSucursales() async {
@@ -33,13 +39,11 @@ class SucursalesProvider extends ChangeNotifier {
           .map((sucursal) => Sucursal.fromJson(sucursal))
           .toList();
 
-      // Si no hay sucursales, crear datos de prueba
-      /*     if (_sucursales.isEmpty) {
-        await _crearDatosDePrueba();
-      } */
-
       // Cargar datos del mapa
       await cargarSucursalesMapa();
+
+      // Construir filas para PlutoGrid
+      _buildSucursalesRows();
 
       log('✅ Sucursales cargadas: ${_sucursales.length}');
     } catch (e) {
@@ -64,6 +68,9 @@ class SucursalesProvider extends ChangeNotifier {
           .toList();
 
       log('✅ Datos de mapa cargados: ${_sucursalesMapa.length}');
+
+      // Construir filas para PlutoGrid
+      _buildSucursalesRows();
     } catch (e) {
       log('❌ Error cargando datos de mapa: $e');
       // Si falla la vista, usar datos básicos de sucursales
@@ -78,79 +85,53 @@ class SucursalesProvider extends ChangeNotifier {
                 empleadosActivos: 0,
                 reportesTotales: 0,
                 citasHoy: 0,
+                telefono: s.telefono,
+                emailContacto: s.emailContacto,
+                capacidadBahias: s.capacidadBahias ?? 0,
               ))
           .toList();
     }
   }
 
-  // Crear datos de prueba
-/*   Future<void> _crearDatosDePrueba() async {
-    try {
-      final sucursalesPrueba = [
-        {
-          'nombre': 'Taller Alex - Centro',
-          'telefono': '555-0001',
-          'email_contacto': 'centro@talleralex.com',
-          'direccion': 'Av. Principal 123, Col. Centro, Ciudad de México',
-          'lat': 19.4326,
-          'lng': -99.1332,
-          'capacidad_bahias': 8,
-          'imagen_url': 'sucursales/taller-centro.jpg',
-        },
-        {
-          'nombre': 'Taller Alex - Norte',
-          'telefono': '555-0002',
-          'email_contacto': 'norte@talleralex.com',
-          'direccion': 'Blvd. Norte 456, Col. Industrial, Ciudad de México',
-          'lat': 19.5051,
-          'lng': -99.1470,
-          'capacidad_bahias': 6,
-          'imagen_url': 'sucursales/taller-norte.jpg',
-        },
-        {
-          'nombre': 'Taller Alex - Sur',
-          'telefono': '555-0003',
-          'email_contacto': 'sur@talleralex.com',
-          'direccion': 'Calzada del Sur 789, Col. Del Valle, Ciudad de México',
-          'lat': 19.3687,
-          'lng': -99.1640,
-          'capacidad_bahias': 10,
-          'imagen_url': 'sucursales/taller-sur.jpg',
-        },
-        {
-          'nombre': 'Taller Alex - Express',
-          'telefono': '555-0004',
-          'email_contacto': 'express@talleralex.com',
-          'direccion': 'Plaza Comercial Express, Local 5, Ciudad de México',
-          'lat': 19.4200,
-          'lng': -99.1100,
-          'capacidad_bahias': 4,
-          'imagen_url': 'sucursales/taller-express.jpg',
-        },
-      ];
+  // Construir filas para PlutoGrid usando datos de VwMapaSucursales
+  void _buildSucursalesRows() {
+    sucursalesRows.clear();
 
-      for (final sucursalData in sucursalesPrueba) {
-        await supabaseLU.from('sucursales').insert(sucursalData);
-      }
-
-      // Recargar las sucursales después de crear los datos de prueba
-      final response =
-          await supabaseLU.from('sucursales').select('*').order('nombre');
-
-      _sucursales = (response as List)
-          .map((sucursal) => Sucursal.fromJson(sucursal))
-          .toList();
-
-      log('✅ Datos de prueba creados: ${_sucursales.length} sucursales');
-    } catch (e) {
-      log('❌ Error creando datos de prueba: $e');
+    for (int i = 0; i < _sucursalesMapa.length; i++) {
+      final sucursal = _sucursalesMapa[i];
+      sucursalesRows.add(PlutoRow(cells: {
+        'numero': PlutoCell(value: (i + 1).toString()),
+        'nombre': PlutoCell(value: sucursal.nombre),
+        'telefono': PlutoCell(value: sucursal.telefono ?? ''),
+        'email': PlutoCell(value: sucursal.emailContacto ?? ''),
+        'direccion': PlutoCell(value: sucursal.direccion ?? ''),
+        'empleados_activos': PlutoCell(value: sucursal.empleadosActivos),
+        'capacidad_bahias': PlutoCell(value: sucursal.capacidadBahias),
+        'reportes_totales': PlutoCell(value: sucursal.reportesTotales),
+        'citas_hoy': PlutoCell(value: sucursal.citasHoy),
+        'coordenadas': PlutoCell(
+            value: sucursal.lat != null && sucursal.lng != null
+                ? 'Ubicado'
+                : 'Sin ubicar'),
+        'acciones': PlutoCell(value: sucursal.sucursalId),
+      }));
     }
-  } */
+  }
 
   // Seleccionar una sucursal
   void seleccionarSucursal(Sucursal sucursal) {
     _sucursalSeleccionada = sucursal;
+    _sucursalSeleccionadaId = sucursal.id;
     log('🏢 Sucursal seleccionada: ${sucursal.nombre}');
+    notifyListeners();
+  }
+
+  // Seleccionar una sucursal por ID (para el sidebar)
+  void seleccionarSucursalPorId(String sucursalId) {
+    _sucursalSeleccionadaId = sucursalId;
+    _sucursalSeleccionada =
+        _sucursales.where((s) => s.id == sucursalId).firstOrNull;
+    log('🏢 Sucursal seleccionada por ID: $sucursalId');
     notifyListeners();
   }
 

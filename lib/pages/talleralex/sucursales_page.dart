@@ -6,6 +6,7 @@ import 'package:nethive_neo/providers/talleralex/sucursales_provider.dart';
 import 'package:nethive_neo/providers/talleralex/navigation_provider.dart';
 import 'package:nethive_neo/pages/talleralex/widgets/sucursal_selector_sidebar.dart';
 import 'package:nethive_neo/pages/talleralex/widgets/sucursales_table.dart';
+import 'package:nethive_neo/pages/talleralex/widgets/sucursales_cards_view.dart';
 import 'package:nethive_neo/pages/talleralex/widgets/sucursales_map_view.dart';
 import 'package:nethive_neo/theme/theme.dart';
 
@@ -100,26 +101,49 @@ class _SucursalesPageState extends State<SucursalesPage>
           child: SucursalSelectorSidebar(
             provider: provider,
             onSucursalSelected: (sucursalId) {
-              // Navegar a la sucursal específica
-              context.go('/sucursal/$sucursalId');
+              final navigationProvider =
+                  context.read<TallerAlexNavigationProvider>();
+              navigationProvider.setSucursalSeleccionada(sucursalId);
             },
           ),
         ),
 
         // Contenido principal
         Expanded(
-          child: Column(
-            children: [
-              _buildEnhancedHeader(provider),
-              Expanded(
-                child:
-                    showMapView ? _buildMapView() : _buildTableView(provider),
-              ),
-            ],
+          child: Container(
+            margin: const EdgeInsets.all(16),
+            child: _buildMainContent(provider),
           ),
         ),
       ],
     );
+  }
+
+  Widget _buildMainContent(SucursalesProvider provider) {
+    return Column(
+      children: [
+        _buildEnhancedHeader(provider),
+        const SizedBox(height: 16),
+        Expanded(
+          child: _buildCurrentView(provider),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCurrentView(SucursalesProvider provider) {
+    final isLargeScreen = MediaQuery.of(context).size.width > 1200;
+
+    if (showMapView) {
+      return _buildMapView();
+    } else {
+      // En pantallas grandes mostrar tabla, en móviles mostrar cards
+      if (isLargeScreen) {
+        return _buildTableView(provider);
+      } else {
+        return SucursalesCardsView(provider: provider);
+      }
+    }
   }
 
   Widget _buildMobileLayout(SucursalesProvider provider) {
@@ -127,7 +151,7 @@ class _SucursalesPageState extends State<SucursalesPage>
       children: [
         _buildMobileHeader(provider),
         Expanded(
-          child: showMapView ? _buildMapView() : _buildTableView(provider),
+          child: _buildCurrentView(provider),
         ),
       ],
     );
@@ -206,26 +230,23 @@ class _SucursalesPageState extends State<SucursalesPage>
             ),
           ),
 
-          // Toggle de vista
+          // Toggle de vista simplificado
           Container(
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Colors.white.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: Colors.white.withOpacity(0.2),
+              ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+            child: Column(
               children: [
                 _buildViewToggleButton(
-                  icon: Icons.map,
-                  label: 'Mapa',
-                  isSelected: showMapView,
-                  onTap: () => setState(() => showMapView = true),
-                ),
-                _buildViewToggleButton(
-                  icon: Icons.table_rows,
-                  label: 'Tabla',
-                  isSelected: !showMapView,
-                  onTap: () => setState(() => showMapView = false),
+                  icon: showMapView ? Icons.map : Icons.table_chart,
+                  label: showMapView ? 'Mapa' : 'Tabla',
+                  isSelected: true,
+                  onTap: () => setState(() => showMapView = !showMapView),
                 ),
               ],
             ),
