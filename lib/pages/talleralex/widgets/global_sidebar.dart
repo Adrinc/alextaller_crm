@@ -4,10 +4,14 @@ import 'package:nethive_neo/theme/theme.dart';
 
 class GlobalSidebar extends StatefulWidget {
   final String currentRoute;
+  final bool isDrawer;
+  final VoidCallback? onNavigate;
 
   const GlobalSidebar({
     Key? key,
     required this.currentRoute,
+    this.isDrawer = false,
+    this.onNavigate,
   }) : super(key: key);
 
   @override
@@ -46,20 +50,22 @@ class _GlobalSidebarState extends State<GlobalSidebar>
     final theme = AppTheme.of(context);
 
     return Container(
-      width: 280,
+      width: widget.isDrawer ? MediaQuery.of(context).size.width * 0.8 : 280,
       decoration: BoxDecoration(
         color: theme.secondaryBackground,
-        border: Border(
-          right: BorderSide(
-            color: theme.primaryColor.withOpacity(0.1),
-            width: 1,
-          ),
-        ),
+        border: widget.isDrawer
+            ? null
+            : Border(
+                right: BorderSide(
+                  color: theme.primaryColor.withOpacity(0.1),
+                  width: 1,
+                ),
+              ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
             blurRadius: 10,
-            offset: const Offset(2, 0),
+            offset: widget.isDrawer ? const Offset(-2, 0) : const Offset(2, 0),
           ),
         ],
       ),
@@ -82,7 +88,7 @@ class _GlobalSidebarState extends State<GlobalSidebar>
 
   Widget _buildHeader(AppTheme theme) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: EdgeInsets.all(widget.isDrawer ? 16 : 24),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -103,62 +109,89 @@ class _GlobalSidebarState extends State<GlobalSidebar>
       ),
       child: Column(
         children: [
-          // Logo mejorado con neumorphism
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white,
-                  Colors.white.withOpacity(0.9),
-                ],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.white.withOpacity(0.5),
-                  offset: const Offset(-4, -4),
-                  blurRadius: 12,
-                ),
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.2),
-                  offset: const Offset(4, 4),
-                  blurRadius: 12,
+          // Botón de cerrar en modo drawer (posicionado arriba a la derecha)
+          if (widget.isDrawer)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(
+                      Icons.close,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                    padding: const EdgeInsets.all(8),
+                  ),
                 ),
               ],
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                'assets/images/favicon.png',
-                fit: BoxFit.cover,
+
+          // Logo centrado
+          Center(
+            child: Container(
+              width: widget.isDrawer ? 60 : 80,
+              height: widget.isDrawer ? 60 : 80,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(widget.isDrawer ? 15 : 20),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.white,
+                    Colors.white.withOpacity(0.9),
+                  ],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white.withOpacity(0.5),
+                    offset: const Offset(-4, -4),
+                    blurRadius: 12,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    offset: const Offset(4, 4),
+                    blurRadius: 12,
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(widget.isDrawer ? 15 : 20),
+                child: Image.asset(
+                  'assets/images/favicon.png',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
           ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: widget.isDrawer ? 12 : 16),
 
-          // Subtítulo elegante
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: Colors.white.withOpacity(0.2),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.3),
-                width: 1,
+          // Subtítulo elegante centrado
+          Center(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: Colors.white.withOpacity(0.2),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1,
+                ),
               ),
-            ),
-            child: Text(
-              'CRM Corporativo',
-              style: theme.bodyText1.override(
-                fontFamily: 'Poppins',
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 12,
+              child: Text(
+                'CRM Corporativo',
+                style: theme.bodyText1.override(
+                  fontFamily: 'Poppins',
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: widget.isDrawer ? 11 : 12,
+                ),
               ),
             ),
           ),
@@ -169,7 +202,7 @@ class _GlobalSidebarState extends State<GlobalSidebar>
 
   Widget _buildNavigationItems(AppTheme theme) {
     return ListView(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: EdgeInsets.symmetric(vertical: widget.isDrawer ? 12 : 16),
       children: [
         _buildNavItem(
           theme,
@@ -177,7 +210,13 @@ class _GlobalSidebarState extends State<GlobalSidebar>
           title: 'Dashboard Global',
           route: '/dashboard-global',
           isActive: widget.currentRoute == '/dashboard-global',
-          onTap: () => context.go('/dashboard-global'),
+          onTap: () {
+            context.go('/dashboard-global');
+            if (widget.isDrawer) {
+              Navigator.of(context).pop();
+              widget.onNavigate?.call();
+            }
+          },
         ),
         _buildNavItem(
           theme,
@@ -185,7 +224,13 @@ class _GlobalSidebarState extends State<GlobalSidebar>
           title: 'Sucursales Activas',
           route: '/sucursales',
           isActive: widget.currentRoute == '/sucursales',
-          onTap: () => context.go('/sucursales'),
+          onTap: () {
+            context.go('/sucursales');
+            if (widget.isDrawer) {
+              Navigator.of(context).pop();
+              widget.onNavigate?.call();
+            }
+          },
         ),
         const SizedBox(height: 8),
         _buildSectionDivider(theme, 'Administración'),
@@ -203,6 +248,10 @@ class _GlobalSidebarState extends State<GlobalSidebar>
                 backgroundColor: theme.warning,
               ),
             );
+            if (widget.isDrawer) {
+              Navigator.of(context).pop();
+              widget.onNavigate?.call();
+            }
           },
         ),
         _buildNavItem(
@@ -219,6 +268,10 @@ class _GlobalSidebarState extends State<GlobalSidebar>
                 backgroundColor: theme.warning,
               ),
             );
+            if (widget.isDrawer) {
+              Navigator.of(context).pop();
+              widget.onNavigate?.call();
+            }
           },
         ),
         const SizedBox(height: 8),
@@ -237,6 +290,10 @@ class _GlobalSidebarState extends State<GlobalSidebar>
                 backgroundColor: theme.warning,
               ),
             );
+            if (widget.isDrawer) {
+              Navigator.of(context).pop();
+              widget.onNavigate?.call();
+            }
           },
         ),
       ],
@@ -356,7 +413,7 @@ class _GlobalSidebarState extends State<GlobalSidebar>
 
   Widget _buildFooter(AppTheme theme) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(widget.isDrawer ? 12 : 16),
       decoration: BoxDecoration(
         color: theme.primaryBackground,
         border: Border(

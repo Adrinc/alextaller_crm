@@ -6,6 +6,7 @@ import 'package:nethive_neo/providers/talleralex/navigation_provider.dart';
 import 'package:nethive_neo/providers/talleralex/dashboard_global_provider.dart';
 import 'package:nethive_neo/theme/theme.dart';
 import 'package:nethive_neo/pages/talleralex/widgets/global_sidebar.dart';
+import 'package:nethive_neo/pages/talleralex/widgets/responsive_drawer.dart';
 import 'package:nethive_neo/pages/talleralex/widgets/dashboard_widgets/dashboard_stats_cards.dart';
 import 'package:nethive_neo/pages/talleralex/widgets/dashboard_widgets/dashboard_charts_section.dart';
 import 'package:nethive_neo/pages/talleralex/widgets/dashboard_widgets/dashboard_activity_feed.dart';
@@ -64,10 +65,18 @@ class _DashboardGlobalPageState extends State<DashboardGlobalPage>
       create: (context) => DashboardGlobalProvider(),
       child: Scaffold(
         backgroundColor: theme.primaryBackground,
+        drawer: isSmallScreen
+            ? Drawer(
+                child: ResponsiveDrawer(
+                  currentRoute: '/dashboard-global',
+                ),
+              )
+            : null,
         body: Row(
           children: [
             // Sidebar
-            if (!isSmallScreen) GlobalSidebar(currentRoute: '/dashboard'),
+            if (!isSmallScreen)
+              GlobalSidebar(currentRoute: '/dashboard-global'),
 
             // Contenido principal
             Expanded(
@@ -325,13 +334,33 @@ class _DashboardGlobalPageState extends State<DashboardGlobalPage>
                 Row(
                   children: [
                     if (isSmallScreen)
-                      IconButton(
-                        onPressed: () {
-                          // TODO: Implement drawer toggle
-                        },
-                        icon: Icon(
-                          Icons.menu,
-                          color: theme.primaryText,
+                      Container(
+                        margin: const EdgeInsets.only(right: 12),
+                        decoration: BoxDecoration(
+                          color: theme.secondaryBackground,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: theme.alternate.withOpacity(0.3),
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            Scaffold.of(context).openDrawer();
+                          },
+                          icon: Icon(
+                            Icons.menu_rounded,
+                            color: theme.primaryText,
+                            size: 22,
+                          ),
+                          padding: const EdgeInsets.all(8),
                         ),
                       ),
                     Container(
