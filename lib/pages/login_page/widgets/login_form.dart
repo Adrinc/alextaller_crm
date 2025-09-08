@@ -163,19 +163,18 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                               width: 50,
                               height: 50,
                               decoration: BoxDecoration(
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Color.fromARGB(255, 237, 59, 246),
-                                    Color.fromARGB(255, 137, 16, 185)
-                                  ],
-                                ),
+                                color: const Color(0xFFF0F0F3),
                                 borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: const Color(0xFF3B82F6)
-                                        .withOpacity(0.3),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 8),
+                                    color: Colors.white,
+                                    offset: const Offset(-4, -4),
+                                    blurRadius: 15,
+                                  ),
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    offset: const Offset(4, 4),
+                                    blurRadius: 15,
                                   ),
                                 ],
                               ),
@@ -192,18 +191,18 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Bienvenido a NetHive',
+                                  'Bienvenido a Taller Alex',
                                   style: GoogleFonts.inter(
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    color: const Color(0xFF2D3748),
                                   ),
                                 ),
                                 Text(
-                                  'Plataforma de Gestión de Infraestructura',
+                                  'CRM Corporativo',
                                   style: GoogleFonts.inter(
                                     fontSize: 14,
-                                    color: Colors.white60,
+                                    color: const Color(0xFF718096),
                                     fontWeight: FontWeight.w300,
                                   ),
                                 ),
@@ -218,8 +217,10 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [
-                                Color.fromARGB(255, 185, 16, 162),
-                                Color.fromARGB(255, 199, 59, 246)
+                                Color.fromARGB(
+                                    255, 185, 16, 171), // Fucsia sagrado
+                                Color.fromARGB(
+                                    255, 157, 0, 255), // Púrpura complementario
                               ],
                             ),
                             borderRadius: BorderRadius.circular(2),
@@ -236,21 +237,27 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
               style: GoogleFonts.inter(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: const Color(0xFF2D3748),
                 letterSpacing: 1.5,
               ),
             ),
             const SizedBox(height: 12),
 
-            // Campo de email con efectos mejorados
+            // Campo de email con efectos neumórficos
             Container(
               decoration: BoxDecoration(
+                color: const Color(0xFFF0F0F3),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
+                    color: Colors.white,
+                    offset: const Offset(-4, -4),
+                    blurRadius: 15,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    offset: const Offset(4, 4),
+                    blurRadius: 15,
                   ),
                 ],
               ),
@@ -271,7 +278,7 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   return null;
                 },
                 style: GoogleFonts.inter(
-                  color: Colors.white,
+                  color: const Color(0xFF2D3748),
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),
@@ -279,14 +286,12 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   hintText: 'admin@talleralex.com',
                   hintStyle: GoogleFonts.inter(
                     color: isMobile
-                        ? Colors.white.withOpacity(0.6)
-                        : Colors.white.withOpacity(0.4),
+                        ? const Color(0xFF718096)
+                        : const Color(0xFF718096),
                     fontSize: 16,
                   ),
                   filled: true,
-                  fillColor: isMobile
-                      ? Colors.white.withOpacity(0.15) // Más opaco en móvil
-                      : Colors.white.withOpacity(0.08),
+                  fillColor: const Color(0xFFF0F0F3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -294,7 +299,8 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                      color: Color.fromARGB(255, 185, 16, 171),
+                      color:
+                          Color.fromARGB(255, 185, 16, 171), // Fucsia sagrado
                       width: 2,
                     ),
                   ),
@@ -306,9 +312,7 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                     padding: const EdgeInsets.all(12),
                     child: Icon(
                       Icons.email_outlined,
-                      color: isMobile
-                          ? Colors.white.withOpacity(0.8)
-                          : Colors.white60,
+                      color: const Color(0xFF718096),
                       size: 20,
                     ),
                   ),
@@ -324,21 +328,27 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
               style: GoogleFonts.inter(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: Colors.white,
+                color: const Color(0xFF2D3748),
                 letterSpacing: 1.5,
               ),
             ),
             const SizedBox(height: 12),
 
-            // Campo de contraseña con efectos mejorados
+            // Campo de contraseña con efectos neumórficos
             Container(
               decoration: BoxDecoration(
+                color: const Color(0xFFF0F0F3),
                 borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
+                    color: Colors.white,
+                    offset: const Offset(-4, -4),
+                    blurRadius: 15,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    offset: const Offset(4, 4),
+                    blurRadius: 15,
                   ),
                 ],
               ),
@@ -358,22 +368,18 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   return null;
                 },
                 style: GoogleFonts.inter(
-                  color: Colors.white,
+                  color: const Color(0xFF2D3748),
                   fontSize: 16,
                   fontWeight: FontWeight.w400,
                 ),
                 decoration: InputDecoration(
                   hintText: '••••••••',
                   hintStyle: GoogleFonts.inter(
-                    color: isMobile
-                        ? Colors.white.withOpacity(0.6)
-                        : Colors.white.withOpacity(0.4),
+                    color: const Color(0xFF718096),
                     fontSize: 16,
                   ),
                   filled: true,
-                  fillColor: isMobile
-                      ? Colors.white.withOpacity(0.15) // Más opaco en móvil
-                      : Colors.white.withOpacity(0.08),
+                  fillColor: const Color(0xFFF0F0F3),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -381,7 +387,8 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                      color: const Color.fromARGB(255, 182, 16, 185),
+                      color:
+                          Color.fromARGB(255, 185, 16, 171), // Fucsia sagrado
                       width: 2,
                     ),
                   ),
@@ -393,9 +400,7 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                     padding: const EdgeInsets.all(12),
                     child: Icon(
                       Icons.lock_outline,
-                      color: isMobile
-                          ? Colors.white.withOpacity(0.8)
-                          : Colors.white60,
+                      color: const Color(0xFF718096),
                       size: 20,
                     ),
                   ),
@@ -404,9 +409,7 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                       passwordVisibility
                           ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
-                      color: isMobile
-                          ? Colors.white.withOpacity(0.8)
-                          : Colors.white60,
+                      color: const Color(0xFF718096),
                       size: 20,
                     ),
                     onPressed: () => setState(
@@ -419,23 +422,25 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
 
             const SizedBox(height: 40),
 
-            // Botón de iniciar sesión mejorado
+            // Botón de iniciar sesión neumórfico
             ScaleTransition(
               scale: _buttonScale,
               child: Container(
                 width: double.infinity,
                 height: 56,
                 decoration: BoxDecoration(
+                  color: const Color(0xFFF0F0F3),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow: [
                     BoxShadow(
-                      color: isMobile
-                          ? const Color.fromARGB(255, 132, 3, 161)
-                              .withOpacity(0.6) // Azul en móvil
-                          : const Color.fromARGB(255, 182, 16, 185)
-                              .withOpacity(0.4), // Verde en desktop
-                      blurRadius: 20,
-                      offset: const Offset(0, 8),
+                      color: Colors.white,
+                      offset: const Offset(-4, -4),
+                      blurRadius: 15,
+                    ),
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      offset: const Offset(4, 4),
+                      blurRadius: 15,
                     ),
                   ],
                 ),
@@ -450,10 +455,9 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isMobile
-                        ? const Color.fromARGB(
-                            255, 127, 3, 161) // Azul más contrastante en móvil
+                        ? const Color.fromARGB(255, 127, 3, 161)
                         : const Color.fromARGB(
-                            255, 185, 16, 176), // Verde en desktop
+                            255, 185, 16, 171), // Fucsia sagrado para desktop
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -492,14 +496,16 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   children: [
                     const Icon(
                       Icons.lock_outline,
-                      color: const Color.fromARGB(255, 182, 16, 185),
+                      color:
+                          Color.fromARGB(255, 185, 16, 171), // Fucsia sagrado
                       size: 16,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'Conexión segura',
                       style: GoogleFonts.inter(
-                        color: const Color.fromARGB(255, 182, 16, 185),
+                        color: const Color.fromARGB(
+                            255, 185, 16, 171), // Fucsia sagrado
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
@@ -511,16 +517,24 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
 
             const SizedBox(height: 50),
 
-            // Características principales con diseño mejorado
+            // Características principales con diseño neumórfico
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.03),
+                color: const Color(0xFFF0F0F3),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Colors.white.withOpacity(0.1),
-                  width: 1,
-                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white,
+                    offset: const Offset(-4, -4),
+                    blurRadius: 15,
+                  ),
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    offset: const Offset(4, 4),
+                    blurRadius: 15,
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -531,7 +545,8 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                         width: 6,
                         height: 6,
                         decoration: const BoxDecoration(
-                          color: const Color.fromARGB(255, 182, 16, 185),
+                          color: Color.fromARGB(
+                              255, 185, 16, 171), // Fucsia sagrado
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -541,7 +556,7 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                         style: GoogleFonts.inter(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                          color: const Color(0xFF2D3748),
                           letterSpacing: 1.5,
                         ),
                       ),
@@ -551,14 +566,14 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildFeatureItem('Gestión completa de infraestructura',
-                          Icons.dashboard_outlined),
+                      _buildFeatureItem('Gestión de talleres y sucursales',
+                          Icons.store_outlined),
                       _buildFeatureItem(
-                          'Monitoreo en tiempo real', Icons.analytics_outlined),
+                          'Control de inventario', Icons.inventory_outlined),
                       _buildFeatureItem(
-                          'Reportes avanzados', Icons.assessment_outlined),
+                          'Reportes de ventas', Icons.assessment_outlined),
                       _buildFeatureItem(
-                          'Dashboard intuitivo', Icons.widgets_outlined),
+                          'Dashboard intuitivo', Icons.dashboard_outlined),
                     ],
                   ),
                 ],
@@ -580,12 +595,25 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 182, 16, 185).withOpacity(0.1),
+              color: const Color.fromARGB(255, 185, 16, 171)
+                  .withOpacity(0.1), // Fucsia sagrado
               borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.white,
+                  offset: const Offset(-2, -2),
+                  blurRadius: 6,
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  offset: const Offset(2, 2),
+                  blurRadius: 6,
+                ),
+              ],
             ),
             child: Icon(
               icon,
-              color: const Color.fromARGB(255, 182, 16, 185),
+              color: const Color.fromARGB(255, 185, 16, 171), // Fucsia sagrado
               size: 16,
             ),
           ),
@@ -594,7 +622,7 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
             child: Text(
               text,
               style: GoogleFonts.inter(
-                color: Colors.white70,
+                color: const Color(0xFF718096),
                 fontSize: 14,
                 height: 1.5,
                 fontWeight: FontWeight.w400,

@@ -209,9 +209,14 @@ class _GlobalSidebarState extends State<GlobalSidebar>
           icon: Icons.dashboard_rounded,
           title: 'Dashboard Global',
           route: '/dashboard-global',
-          isActive: widget.currentRoute == '/dashboard-global',
+          isActive: widget.currentRoute == '/dashboard-global' ||
+              widget.currentRoute == '/',
           onTap: () {
-            context.go('/dashboard-global');
+            // Solo navegar si no estamos ya en esa ruta
+            if (widget.currentRoute != '/dashboard-global' &&
+                widget.currentRoute != '/') {
+              context.go('/dashboard-global');
+            }
             if (widget.isDrawer) {
               Navigator.of(context).pop();
               widget.onNavigate?.call();
@@ -225,7 +230,10 @@ class _GlobalSidebarState extends State<GlobalSidebar>
           route: '/sucursales',
           isActive: widget.currentRoute == '/sucursales',
           onTap: () {
-            context.go('/sucursales');
+            // Solo navegar si no estamos ya en esa ruta
+            if (widget.currentRoute != '/sucursales') {
+              context.go('/sucursales');
+            }
             if (widget.isDrawer) {
               Navigator.of(context).pop();
               widget.onNavigate?.call();

@@ -37,6 +37,13 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
+      path: '/dashboard-global',
+      name: 'dashboard-global',
+      builder: (BuildContext context, GoRouterState state) {
+        return const DashboardGlobalPage();
+      },
+    ),
+    GoRoute(
       path: '/sucursales',
       name: 'sucursales',
       builder: (BuildContext context, GoRouterState state) {

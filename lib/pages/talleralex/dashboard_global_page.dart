@@ -61,6 +61,11 @@ class _DashboardGlobalPageState extends State<DashboardGlobalPage>
     final theme = AppTheme.of(context);
     final isSmallScreen = MediaQuery.of(context).size.width < 1200;
 
+    // Obtener la ruta actual desde GoRouter
+    final currentLocation = GoRouterState.of(context).matchedLocation;
+    final currentRoute =
+        currentLocation == '/' ? '/dashboard-global' : currentLocation;
+
     return ChangeNotifierProvider(
       create: (context) => DashboardGlobalProvider(),
       child: Scaffold(
@@ -68,15 +73,14 @@ class _DashboardGlobalPageState extends State<DashboardGlobalPage>
         drawer: isSmallScreen
             ? Drawer(
                 child: ResponsiveDrawer(
-                  currentRoute: '/dashboard-global',
+                  currentRoute: currentRoute,
                 ),
               )
             : null,
         body: Row(
           children: [
             // Sidebar
-            if (!isSmallScreen)
-              GlobalSidebar(currentRoute: '/dashboard-global'),
+            if (!isSmallScreen) GlobalSidebar(currentRoute: currentRoute),
 
             // Contenido principal
             Expanded(

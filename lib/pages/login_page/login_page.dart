@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
 import 'package:nethive_neo/models/users/token.dart';
@@ -228,26 +229,19 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               // Vista desktop - columna izquierda sólida, derecha degradado
               return Row(
                 children: [
-                  // Lado izquierdo - Formulario (fondo sólido con efectos)
+                  // Lado izquierdo - Formulario (fondo blanco neumórfico)
                   Expanded(
                     flex: 1,
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF0F172A),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 30,
-                            offset: const Offset(10, 0),
-                          ),
-                        ],
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFF0F0F3), // Fondo blanco neumórfico
                       ),
                       child: Stack(
                         children: [
-                          // Patrón de puntos sutil
+                          // Patrón de puntos sutil adaptado para fondo claro
                           Positioned.fill(
                             child: CustomPaint(
-                              painter: DotPatternPainter(),
+                              painter: DotPatternPainter(isLight: true),
                             ),
                           ),
                           Container(
@@ -274,26 +268,42 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                   Expanded(
                     flex: 1,
                     child: Container(
+                      margin: const EdgeInsets.all(20),
                       decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(30)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 8,
+                            offset: Offset(0, 10),
+                          ),
+                        ],
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            Color.fromARGB(255, 26, 26, 26), // Azul profundo
+                            Color.fromARGB(255, 236, 236, 236), // Azul profundo
                             Color.fromARGB(255, 246, 59, 199), // Azul brillante
                             Color.fromARGB(
                                 255, 185, 16, 182), // Verde esmeralda
                             Color.fromARGB(255, 148, 5, 150), // Verde intenso
-                            Color.fromARGB(255, 21, 0, 56), // Púrpura
+                            Color.fromARGB(255, 236, 236, 236), // Púrpura
                           ],
                           stops: [0.0, 0.25, 0.5, 0.75, 1.0],
                         ),
                       ),
                       child: Stack(
                         children: [
+                          // Patrón geométrico de fondo
+                          Positioned.fill(
+                            child: CustomPaint(
+                              painter: GeometricPatternPainter(),
+                            ),
+                          ),
+
                           // Efectos de círculos flotantes
                           ...List.generate(
-                              8,
+                              10,
                               (index) => _buildFloatingCircle(
                                   index, constraints, true)),
                           // Contenido centrado horizontal y verticalmente
@@ -342,7 +352,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                   FadeTransition(
                                     opacity: _fadeAnimation,
                                     child: const Text(
-                                      'NetHive',
+                                      'Taller Alex',
                                       style: TextStyle(
                                         fontSize: 52,
                                         fontWeight: FontWeight.bold,
@@ -362,7 +372,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                   FadeTransition(
                                     opacity: _fadeAnimation,
                                     child: Text(
-                                      'Infrastructure Management',
+                                      'CRM Corporativo',
                                       style: TextStyle(
                                         fontSize: 20,
                                         color: Colors.white.withOpacity(0.8),
@@ -389,6 +399,34 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                                         ),
                                         borderRadius: BorderRadius.circular(2),
                                       ),
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 40),
+
+                                  // Características premium
+                                  FadeTransition(
+                                    opacity: _fadeAnimation,
+                                    child: Column(
+                                      children: [
+                                        _buildFeatureCard(
+                                          'Gestión Integral',
+                                          'Control total de talleres y sucursales',
+                                          Icons.business_center_outlined,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        _buildFeatureCard(
+                                          'Reportes Avanzados',
+                                          'Análisis y métricas en tiempo real',
+                                          Icons.analytics_outlined,
+                                        ),
+                                        const SizedBox(height: 16),
+                                        _buildFeatureCard(
+                                          'Dashboard Intuitivo',
+                                          'Interfaz moderna y fácil de usar',
+                                          Icons.dashboard_outlined,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ],
@@ -419,6 +457,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       {'size': 70.0, 'top': 450.0, 'right': 150.0, 'opacity': 0.11},
       {'size': 90.0, 'top': 100.0, 'left': 150.0, 'opacity': 0.07},
       {'size': 110.0, 'bottom': 200.0, 'left': 50.0, 'opacity': 0.08},
+      {'size': 50.0, 'top': 600.0, 'right': 80.0, 'opacity': 0.15},
+      {'size': 130.0, 'top': 150.0, 'right': 200.0, 'opacity': 0.05},
     ];
 
     if (index >= random.length) return const SizedBox();
@@ -440,12 +480,41 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
               height: circle['size'] as double,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: Colors.white.withOpacity(
-                    (circle['opacity'] as double) * _fadeAnimation.value),
+                gradient: isRightSide
+                    ? LinearGradient(
+                        colors: [
+                          const Color.fromARGB(255, 246, 59, 199).withOpacity(
+                              (circle['opacity'] as double) *
+                                  _fadeAnimation.value *
+                                  0.3),
+                          const Color.fromARGB(255, 185, 16, 182).withOpacity(
+                              (circle['opacity'] as double) *
+                                  _fadeAnimation.value *
+                                  0.2),
+                        ],
+                      )
+                    : null,
+                color: isRightSide
+                    ? null
+                    : Colors.white.withOpacity(
+                        (circle['opacity'] as double) * _fadeAnimation.value),
                 border: Border.all(
-                  color: Colors.white.withOpacity(0.1 * _fadeAnimation.value),
+                  color: isRightSide
+                      ? const Color.fromARGB(255, 246, 59, 199)
+                          .withOpacity(0.1 * _fadeAnimation.value)
+                      : Colors.white.withOpacity(0.1 * _fadeAnimation.value),
                   width: 1,
                 ),
+                boxShadow: isRightSide
+                    ? [
+                        BoxShadow(
+                          color: const Color.fromARGB(255, 246, 59, 199)
+                              .withOpacity(0.1),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ]
+                    : null,
               ),
             ),
           ),
@@ -453,14 +522,96 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
       },
     );
   }
+
+  Widget _buildFeatureCard(String title, String description, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 50,
+            height: 50,
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 246, 59, 199),
+                  Color.fromARGB(255, 185, 16, 182),
+                ],
+              ),
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color:
+                      const Color.fromARGB(255, 185, 16, 182).withOpacity(0.3),
+                  blurRadius: 15,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Icon(
+              icon,
+              color: Colors.white,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  description,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withOpacity(0.7),
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // Custom painter para patrón de puntos
 class DotPatternPainter extends CustomPainter {
+  final bool isLight;
+
+  const DotPatternPainter({this.isLight = false});
+
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withOpacity(0.02)
+      ..color = isLight
+          ? Colors.black.withOpacity(0.03)
+          : Colors.white.withOpacity(0.02)
       ..style = PaintingStyle.fill;
 
     const double spacing = 30;
@@ -475,6 +626,65 @@ class DotPatternPainter extends CustomPainter {
         );
       }
     }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+// Custom painter para patrón geométrico
+class GeometricPatternPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withOpacity(0.05)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
+
+    final path = Path();
+
+    // Crear líneas diagonales sutiles
+    for (double i = 0; i < size.width + size.height; i += 80) {
+      path.moveTo(i, 0);
+      path.lineTo(i - size.height, size.height);
+    }
+
+    // Crear líneas diagonales en la otra dirección
+    for (double i = 0; i < size.width + size.height; i += 120) {
+      path.moveTo(0, i);
+      path.lineTo(size.width, i - size.width);
+    }
+
+    canvas.drawPath(path, paint);
+
+    // Añadir algunos hexágonos sutiles
+    final hexPaint = Paint()
+      ..color = const Color.fromARGB(255, 246, 59, 199).withOpacity(0.03)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.5;
+
+    for (int i = 0; i < 5; i++) {
+      final centerX = (i + 1) * size.width / 6;
+      final centerY = (i % 2 == 0 ? 0.3 : 0.7) * size.height;
+      _drawHexagon(canvas, hexPaint, centerX, centerY, 30);
+    }
+  }
+
+  void _drawHexagon(Canvas canvas, Paint paint, double centerX, double centerY,
+      double radius) {
+    final path = Path();
+    for (int i = 0; i < 6; i++) {
+      final angle = (i * 60) * 3.14159 / 180;
+      final x = centerX + radius * cos(angle);
+      final y = centerY + radius * sin(angle);
+      if (i == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+    path.close();
+    canvas.drawPath(path, paint);
   }
 
   @override
