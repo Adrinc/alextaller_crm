@@ -288,16 +288,13 @@ class _GlobalSidebarState extends State<GlobalSidebar>
           theme,
           icon: Icons.settings_rounded,
           title: 'Configuración Global',
-          route: '/configuracion-global',
-          isActive: widget.currentRoute == '/configuracion-global',
+          route: '/dashboard-global/configuracion',
+          isActive: widget.currentRoute == '/dashboard-global/configuracion',
           onTap: () {
-            // TODO: Implementar navegación
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Función en desarrollo'),
-                backgroundColor: theme.warning,
-              ),
-            );
+            // Solo navegar si no estamos ya en esa ruta
+            if (widget.currentRoute != '/dashboard-global/configuracion') {
+              context.go('/dashboard-global/configuracion');
+            }
             if (widget.isDrawer) {
               Navigator.of(context).pop();
               widget.onNavigate?.call();

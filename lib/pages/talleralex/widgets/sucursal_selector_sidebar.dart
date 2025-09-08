@@ -61,23 +61,16 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            AppTheme.of(context).secondaryBackground,
-            AppTheme.of(context).primaryBackground,
-          ],
-        ),
+        color: const Color(0xFFF0F0F3),
         border: Border(
           right: BorderSide(
-            color: AppTheme.of(context).primaryColor.withOpacity(0.2),
+            color: Colors.grey.shade300,
             width: 1,
           ),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.grey.shade400.withOpacity(0.3),
             blurRadius: 10,
             offset: const Offset(2, 0),
           ),
@@ -86,16 +79,27 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header con gradiente personalizado de Taller Alex
+          // Header neumórfico con logo de Taller Alex
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              gradient: AppTheme.of(context).primaryGradient,
+              color: const Color(0xFFF0F0F3),
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(20),
+                bottomRight: Radius.circular(20),
+              ),
               boxShadow: [
                 BoxShadow(
-                  color: AppTheme.of(context).primaryColor.withOpacity(0.3),
-                  blurRadius: 15,
-                  offset: const Offset(0, 5),
+                  color: Colors.white,
+                  offset: const Offset(-8, -8),
+                  blurRadius: 16,
+                  spreadRadius: 0,
+                ),
+                BoxShadow(
+                  color: Colors.grey.shade400.withOpacity(0.4),
+                  offset: const Offset(8, 8),
+                  blurRadius: 16,
+                  spreadRadius: 0,
                 ),
               ],
             ),
@@ -104,7 +108,7 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
               children: [
                 Row(
                   children: [
-                    // Logo animado para Taller Alex
+                    // Logo real de Taller Alex con efecto neumórfico
                     AnimatedBuilder(
                       animation: _pulseAnimation,
                       builder: (context, child) {
@@ -113,17 +117,31 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
                           child: Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: const Color(0xFFF0F0F3),
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Colors.white.withOpacity(0.4),
-                                width: 2,
-                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.white,
+                                  offset: const Offset(-4, -4),
+                                  blurRadius: 8,
+                                  spreadRadius: 0,
+                                ),
+                                BoxShadow(
+                                  color: Colors.grey.shade400.withOpacity(0.4),
+                                  offset: const Offset(4, 4),
+                                  blurRadius: 8,
+                                  spreadRadius: 0,
+                                ),
+                              ],
                             ),
-                            child: Icon(
-                              Icons.car_repair,
-                              color: Colors.white,
-                              size: 24,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.asset(
+                                'assets/images/favicon.png',
+                                width: 60,
+                                height: 60,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                         );
@@ -134,27 +152,19 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ShaderMask(
-                            shaderCallback: (bounds) => LinearGradient(
-                              colors: [
-                                Colors.white,
-                                Colors.white.withOpacity(0.8)
-                              ],
-                            ).createShader(bounds),
-                            child: Text(
-                              'TALLER ALEX',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
-                              ),
+                          Text(
+                            'TALLER ALEX',
+                            style: TextStyle(
+                              color: AppTheme.of(context).primaryColor,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
                             ),
                           ),
                           Text(
                             'Sucursales',
                             style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
+                              color: AppTheme.of(context).secondaryText,
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                             ),
@@ -166,23 +176,34 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
                 ),
                 const SizedBox(height: 16),
 
-                // Contador de sucursales con efecto
+                // Contador de sucursales neumórfico
                 Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.15),
+                    color: const Color(0xFFF0F0F3),
                     borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
-                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white,
+                        offset: const Offset(-3, -3),
+                        blurRadius: 6,
+                        spreadRadius: 0,
+                      ),
+                      BoxShadow(
+                        color: Colors.grey.shade400.withOpacity(0.4),
+                        offset: const Offset(3, 3),
+                        blurRadius: 6,
+                        spreadRadius: 0,
+                      ),
+                    ],
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         Icons.store,
-                        color: Colors.white,
+                        color: AppTheme.of(context).primaryColor,
                         size: 16,
                       ),
                       const SizedBox(width: 8),
@@ -193,8 +214,8 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
                         builder: (context, value, child) {
                           return Text(
                             '$value sucursales',
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: AppTheme.of(context).primaryColor,
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
@@ -257,30 +278,65 @@ class _SucursalSelectorSidebarState extends State<SucursalSelectorSidebar>
           // Botón para agregar nueva sucursal
           Container(
             padding: const EdgeInsets.all(16),
-            child: SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: () => _showAddSucursalDialog(context),
-                icon: Icon(
-                  Icons.add,
-                  color: AppTheme.of(context).primaryText,
+            child: InkWell(
+              onTap: () => _showAddSucursalDialog(context),
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0F0F3),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.white,
+                      offset: const Offset(-6, -6),
+                      blurRadius: 12,
+                      spreadRadius: 0,
+                    ),
+                    BoxShadow(
+                      color: Colors.grey.shade400.withOpacity(0.4),
+                      offset: const Offset(6, 6),
+                      blurRadius: 12,
+                      spreadRadius: 0,
+                    ),
+                  ],
                 ),
-                label: Text(
-                  'Nueva Sucursal',
-                  style: AppTheme.of(context).bodyText1.override(
-                        fontFamily: 'Poppins',
-                        color: AppTheme.of(context).primaryText,
-                        fontWeight: FontWeight.w600,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.of(context)
+                                .primaryColor
+                                .withOpacity(0.3),
+                            blurRadius: 8,
+                            spreadRadius: 0,
+                          ),
+                        ],
                       ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.of(context).primaryColor,
-                  foregroundColor: AppTheme.of(context).primaryText,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 2,
+                      child: Icon(
+                        Icons.add,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Nueva Sucursal',
+                      style: AppTheme.of(context).bodyText1.override(
+                            fontFamily: 'Poppins',
+                            color: AppTheme.of(context).primaryColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                  ],
                 ),
               ),
             ),

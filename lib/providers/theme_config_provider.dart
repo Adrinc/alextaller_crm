@@ -207,13 +207,13 @@ class ThemeConfigProvider extends ChangeNotifier {
 
       if (lightLogo != null) {
         _lightLogoUrl = supabase.storage
-            .from('nethive')
+            .from('taller_alex')
             .getPublicUrl('configurador/logos/$lightLogo');
       }
 
       if (darkLogo != null) {
         _darkLogoUrl = supabase.storage
-            .from('nethive')
+            .from('taller_alex')
             .getPublicUrl('configurador/logos/$darkLogo');
       }
     } catch (e) {
@@ -324,7 +324,7 @@ class ThemeConfigProvider extends ChangeNotifier {
 
       if (logoBytes != null && logoName != null) {
         await supabase.storage
-            .from('nethive')
+            .from('taller_alex')
             .uploadBinary('configurador/logos/$logoName', logoBytes);
 
         return logoName;
@@ -426,7 +426,7 @@ class ThemeConfigProvider extends ChangeNotifier {
       if (lightLogo != null) {
         try {
           await supabase.storage
-              .from('nethive')
+              .from('taller_alex')
               .remove(['configurador/logos/$lightLogo']);
           log('Light logo deleted: $lightLogo');
         } catch (e) {
@@ -438,7 +438,7 @@ class ThemeConfigProvider extends ChangeNotifier {
       if (darkLogo != null) {
         try {
           await supabase.storage
-              .from('nethive')
+              .from('taller_alex')
               .remove(['configurador/logos/$darkLogo']);
           log('Dark logo deleted: $darkLogo');
         } catch (e) {

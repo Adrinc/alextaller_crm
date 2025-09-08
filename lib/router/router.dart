@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:nethive_neo/helpers/globals.dart';
+import 'package:nethive_neo/pages/talleralex/configuracion_page.dart';
 import 'package:nethive_neo/pages/talleralex/dashboard_global_page.dart';
 import 'package:nethive_neo/pages/talleralex/sucursales_page.dart';
 import 'package:nethive_neo/pages/talleralex/sucursal_layout.dart';
@@ -32,37 +33,62 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/',
       name: 'root',
-      builder: (BuildContext context, GoRouterState state) {
-        return const DashboardGlobalPage();
+      pageBuilder: (BuildContext context, GoRouterState state) {
+        return NoTransitionPage<void>(
+          key: state.pageKey,
+          child: const DashboardGlobalPage(),
+        );
       },
     ),
     GoRoute(
       path: '/dashboard-global',
       name: 'dashboard-global',
-      builder: (BuildContext context, GoRouterState state) {
-        return const DashboardGlobalPage();
+      pageBuilder: (BuildContext context, GoRouterState state) {
+        return NoTransitionPage<void>(
+          key: state.pageKey,
+          child: const DashboardGlobalPage(),
+        );
+      },
+    ),
+    GoRoute(
+      path: '/dashboard-global/configuracion',
+      name: 'dashboard-global-configuracion',
+      pageBuilder: (BuildContext context, GoRouterState state) {
+        return NoTransitionPage<void>(
+          key: state.pageKey,
+          child: const ConfiguracionPage(),
+        );
       },
     ),
     GoRoute(
       path: '/sucursales',
       name: 'sucursales',
-      builder: (BuildContext context, GoRouterState state) {
-        return const SucursalesPage();
+      pageBuilder: (BuildContext context, GoRouterState state) {
+        return NoTransitionPage<void>(
+          key: state.pageKey,
+          child: const SucursalesPage(),
+        );
       },
     ),
     GoRoute(
       path: '/sucursal/:sucursalId',
       name: 'sucursal',
-      builder: (BuildContext context, GoRouterState state) {
+      pageBuilder: (BuildContext context, GoRouterState state) {
         final sucursalId = state.pathParameters['sucursalId']!;
-        return SucursalLayout(sucursalId: sucursalId);
+        return NoTransitionPage<void>(
+          key: state.pageKey,
+          child: SucursalLayout(sucursalId: sucursalId),
+        );
       },
     ),
     GoRoute(
       path: '/login',
       name: 'login',
-      builder: (BuildContext context, GoRouterState state) {
-        return const LoginPage();
+      pageBuilder: (BuildContext context, GoRouterState state) {
+        return NoTransitionPage<void>(
+          key: state.pageKey,
+          child: const LoginPage(),
+        );
       },
     ),
   ],

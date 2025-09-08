@@ -66,11 +66,9 @@ class _SucursalesPageState extends State<SucursalesPage>
     final isLargeScreen = MediaQuery.of(context).size.width > 1200;
 
     return Scaffold(
-      backgroundColor: AppTheme.of(context).primaryBackground,
+      backgroundColor: const Color(0xFFF0F0F3), // Fondo blanco neumórfico
       body: Container(
-        decoration: BoxDecoration(
-          gradient: AppTheme.of(context).darkBackgroundGradient,
-        ),
+        color: const Color(0xFFF0F0F3), // Fondo blanco neumórfico
         child: Consumer<SucursalesProvider>(
           builder: (context, provider, child) {
             return FadeTransition(
@@ -161,30 +159,55 @@ class _SucursalesPageState extends State<SucursalesPage>
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        gradient: AppTheme.of(context).primaryGradient,
+        color: const Color(0xFFF0F0F3),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
+            color: Colors.white,
+            offset: const Offset(-8, -8),
+            blurRadius: 16,
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: Colors.grey.shade400.withOpacity(0.4),
+            offset: const Offset(8, 8),
+            blurRadius: 16,
+            spreadRadius: 0,
           ),
         ],
       ),
       child: Row(
         children: [
-          // Botón de regresar
+          // Botón de regresar neumórfico
           InkWell(
             onTap: () => context.go('/'),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(12),
             child: Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
+                color: const Color(0xFFF0F0F3),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.white,
+                    offset: const Offset(-4, -4),
+                    blurRadius: 8,
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Colors.grey.shade400.withOpacity(0.4),
+                    offset: const Offset(4, 4),
+                    blurRadius: 8,
+                    spreadRadius: 0,
+                  ),
+                ],
               ),
               child: Icon(
                 Icons.arrow_back,
-                color: AppTheme.of(context).primaryText,
+                color: AppTheme.of(context).primaryColor,
                 size: 24,
               ),
             ),
@@ -199,17 +222,38 @@ class _SucursalesPageState extends State<SucursalesPage>
               children: [
                 Row(
                   children: [
-                    Icon(
-                      Icons.store,
-                      color: AppTheme.of(context).primaryText,
-                      size: 32,
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF0F0F3),
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.white,
+                            offset: const Offset(-3, -3),
+                            blurRadius: 6,
+                            spreadRadius: 0,
+                          ),
+                          BoxShadow(
+                            color: Colors.grey.shade400.withOpacity(0.4),
+                            offset: const Offset(3, 3),
+                            blurRadius: 6,
+                            spreadRadius: 0,
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.store,
+                        color: AppTheme.of(context).primaryColor,
+                        size: 24,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Text(
                       'Sucursales',
                       style: AppTheme.of(context).title2.override(
                             fontFamily: 'Poppins',
-                            color: AppTheme.of(context).primaryText,
+                            color: AppTheme.of(context).primaryColor,
                             fontWeight: FontWeight.bold,
                           ),
                     ),
@@ -222,23 +266,33 @@ class _SucursalesPageState extends State<SucursalesPage>
                       : 'No hay sucursales registradas',
                   style: AppTheme.of(context).bodyText2.override(
                         fontFamily: 'Poppins',
-                        color:
-                            AppTheme.of(context).primaryText.withOpacity(0.8),
+                        color: AppTheme.of(context).secondaryText,
                       ),
                 ),
               ],
             ),
           ),
 
-          // Toggle de vista simplificado
+          // Toggle de vista neumórfico
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.1),
+              color: const Color(0xFFF0F0F3),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.white.withOpacity(0.2),
-              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.white,
+                  offset: const Offset(-4, -4),
+                  blurRadius: 8,
+                  spreadRadius: 0,
+                ),
+                BoxShadow(
+                  color: Colors.grey.shade400.withOpacity(0.4),
+                  offset: const Offset(4, 4),
+                  blurRadius: 8,
+                  spreadRadius: 0,
+                ),
+              ],
             ),
             child: Column(
               children: [
@@ -264,19 +318,50 @@ class _SucursalesPageState extends State<SucursalesPage>
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.white.withOpacity(0.2) : null,
-          borderRadius: BorderRadius.circular(8),
+          color: const Color(0xFFF0F0F3),
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.grey.shade400.withOpacity(0.4),
+                    offset: const Offset(2, 2),
+                    blurRadius: 4,
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Colors.white,
+                    offset: const Offset(-2, -2),
+                    blurRadius: 4,
+                    spreadRadius: 0,
+                  ),
+                ]
+              : [
+                  BoxShadow(
+                    color: Colors.white,
+                    offset: const Offset(-2, -2),
+                    blurRadius: 4,
+                    spreadRadius: 0,
+                  ),
+                  BoxShadow(
+                    color: Colors.grey.shade400.withOpacity(0.4),
+                    offset: const Offset(2, 2),
+                    blurRadius: 4,
+                    spreadRadius: 0,
+                  ),
+                ],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
               icon,
-              color: AppTheme.of(context).primaryText,
+              color: isSelected
+                  ? AppTheme.of(context).primaryColor
+                  : AppTheme.of(context).secondaryText,
               size: 18,
             ),
             const SizedBox(width: 8),
@@ -284,7 +369,9 @@ class _SucursalesPageState extends State<SucursalesPage>
               label,
               style: AppTheme.of(context).bodyText2.override(
                     fontFamily: 'Poppins',
-                    color: AppTheme.of(context).primaryText,
+                    color: isSelected
+                        ? AppTheme.of(context).primaryColor
+                        : AppTheme.of(context).secondaryText,
                     fontWeight:
                         isSelected ? FontWeight.w600 : FontWeight.normal,
                   ),

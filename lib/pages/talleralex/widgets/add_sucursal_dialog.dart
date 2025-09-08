@@ -390,7 +390,10 @@ class _AddSucursalDialogState extends State<AddSucursalDialog>
                       child: OutlinedButton(
                         onPressed: _isLoading
                             ? null
-                            : () => Navigator.of(context).pop(),
+                            : () {
+                                widget.provider.resetFormData();
+                                Navigator.of(context).pop();
+                              },
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           side: BorderSide(
@@ -665,7 +668,10 @@ class _AddSucursalDialogState extends State<AddSucursalDialog>
                       child: OutlinedButton(
                         onPressed: _isLoading
                             ? null
-                            : () => Navigator.of(context).pop(),
+                            : () {
+                                widget.provider.resetFormData();
+                                Navigator.of(context).pop();
+                              },
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           side: BorderSide(
@@ -827,17 +833,40 @@ class _AddSucursalDialogState extends State<AddSucursalDialog>
             ),
             child: Row(
               children: [
+                // Mostrar imagen cargada o icono según el estado
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  width: 48,
+                  height: 48,
                   decoration: BoxDecoration(
-                    gradient: gradient,
+                    gradient: file != null ? null : gradient,
                     borderRadius: BorderRadius.circular(12),
+                    border: file != null
+                        ? Border.all(
+                            color: AppTheme.of(context)
+                                .primaryColor
+                                .withOpacity(0.3),
+                            width: 1,
+                          )
+                        : null,
                   ),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  child: file != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(11),
+                          child: Image.memory(
+                            file as Uint8List,
+                            fit: BoxFit.cover,
+                            width: 48,
+                            height: 48,
+                          ),
+                        )
+                      : Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Icon(
+                            icon,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -870,18 +899,52 @@ class _AddSucursalDialogState extends State<AddSucursalDialog>
                     ],
                   ),
                 ),
-                Icon(
-                  fileName != null ? Icons.check_circle : Icons.upload,
-                  color: fileName != null
-                      ? AppTheme.of(context).success
-                      : AppTheme.of(context).secondaryText,
-                ),
+                // Mostrar botón de limpiar cuando hay imagen cargada
+                if (fileName != null && file != null)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        color: AppTheme.of(context).success,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 8),
+                      InkWell(
+                        onTap: () => _limpiarImagen(),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: AppTheme.of(context).error.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Icon(
+                            Icons.close,
+                            color: AppTheme.of(context).error,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Icon(
+                    Icons.upload,
+                    color: AppTheme.of(context).secondaryText,
+                  ),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  void _limpiarImagen() {
+    widget.provider.resetFormData();
+    setState(() {
+      // Forzar rebuild para mostrar el cambio visual
+    });
   }
 
   Future<void> _crearSucursal() async {
