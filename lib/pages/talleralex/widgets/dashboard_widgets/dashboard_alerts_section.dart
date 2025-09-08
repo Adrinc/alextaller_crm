@@ -20,52 +20,48 @@ class DashboardAlertsSection extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.secondaryBackground.withOpacity(0.8),
-            theme.primaryBackground.withOpacity(0.9),
-          ],
-        ),
-        boxShadow: [
-          // Neumorphism shadows
-          BoxShadow(
-            color: Colors.white.withOpacity(0.7),
-            offset: const Offset(-6, -6),
-            blurRadius: 16,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            offset: const Offset(6, 6),
-            blurRadius: 16,
-          ),
-          // Accent glow
-          BoxShadow(
-            color: theme.warning.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        color: theme.secondaryBackground,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: theme.neumorphicShadows,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.notifications_active_rounded,
-                color: theme.warning,
-                size: 24,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: theme.warning.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.warning.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.notifications_active_rounded,
+                  color: theme.warning,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
-              Text(
-                'Alertas y Notificaciones',
-                style: theme.title3.override(
-                  fontFamily: 'Poppins',
-                  color: theme.primaryText,
-                  fontWeight: FontWeight.w600,
+              Flexible(
+                child: Text(
+                  isSmallScreen
+                      ? 'Alertas y\nNotificaciones'
+                      : 'Alertas y Notificaciones',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: theme.primaryText,
+                    fontWeight: FontWeight.w600,
+                    fontSize: isSmallScreen ? 14 : 16,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               const Spacer(),
@@ -77,7 +73,7 @@ class DashboardAlertsSection extends StatelessWidget {
                 ),
                 child: Text(
                   '${alertas.where((a) => a.prioridad == AlertPriority.alta).length}',
-                  style: theme.bodyText2.override(
+                  style: TextStyle(
                     fontFamily: 'Poppins',
                     color: theme.error,
                     fontWeight: FontWeight.w600,
@@ -101,6 +97,11 @@ class DashboardAlertsSection extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: theme.primaryBackground,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: theme.neumorphicInsetShadows,
+      ),
       child: Column(
         children: [
           Icon(
@@ -111,18 +112,20 @@ class DashboardAlertsSection extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             'Todo en orden',
-            style: theme.bodyText1.override(
+            style: TextStyle(
               fontFamily: 'Poppins',
               color: theme.success,
               fontWeight: FontWeight.w600,
+              fontSize: 16,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             'No hay alertas pendientes',
-            style: theme.bodyText2.override(
+            style: TextStyle(
               fontFamily: 'Poppins',
               color: theme.secondaryText,
+              fontSize: 12,
             ),
           ),
         ],
@@ -153,19 +156,27 @@ class DashboardAlertsSection extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: alertColor.withOpacity(0.05),
+        color: theme.primaryBackground,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: theme.neumorphicInsetShadows,
         border: Border.all(
-          color: alertColor.withOpacity(0.2),
-          width: 1,
+          color: alertColor.withOpacity(0.3),
+          width: 2,
         ),
       ),
       child: Row(
         children: [
-          Icon(
-            alertIcon,
-            color: alertColor,
-            size: 20,
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: alertColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              alertIcon,
+              color: alertColor,
+              size: 18,
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -174,7 +185,7 @@ class DashboardAlertsSection extends StatelessWidget {
               children: [
                 Text(
                   alerta.titulo,
-                  style: theme.bodyText1.override(
+                  style: TextStyle(
                     fontFamily: 'Poppins',
                     color: theme.primaryText,
                     fontWeight: FontWeight.w600,
@@ -185,7 +196,7 @@ class DashboardAlertsSection extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(
                     alerta.descripcion!,
-                    style: theme.bodyText2.override(
+                    style: TextStyle(
                       fontFamily: 'Poppins',
                       color: theme.secondaryText,
                       fontSize: 12,
@@ -203,7 +214,7 @@ class DashboardAlertsSection extends StatelessWidget {
                     ),
                     child: Text(
                       alerta.sucursal!,
-                      style: theme.bodyText2.override(
+                      style: TextStyle(
                         fontFamily: 'Poppins',
                         color: theme.secondaryColor,
                         fontSize: 10,
@@ -217,7 +228,7 @@ class DashboardAlertsSection extends StatelessWidget {
           ),
           Text(
             alerta.tiempo,
-            style: theme.bodyText2.override(
+            style: TextStyle(
               fontFamily: 'Poppins',
               color: theme.secondaryText,
               fontSize: 11,

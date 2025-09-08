@@ -80,60 +80,53 @@ class _DashboardChartsSectionState extends State<DashboardChartsSection>
           child: Opacity(
             opacity: _chartAnimation.value,
             child: Container(
-              height: 300,
-              padding: const EdgeInsets.all(20),
+              height: 320,
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    theme.secondaryBackground.withOpacity(0.8),
-                    theme.primaryBackground.withOpacity(0.9),
-                  ],
-                ),
-                boxShadow: [
-                  // Neumorphism shadows
-                  BoxShadow(
-                    color: Colors.white.withOpacity(0.7),
-                    offset: const Offset(-6, -6),
-                    blurRadius: 16,
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    offset: const Offset(6, 6),
-                    blurRadius: 16,
-                  ),
-                  // Accent glow
-                  BoxShadow(
-                    color: theme.primaryColor.withOpacity(0.2),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
+                color: theme.secondaryBackground,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: theme.neumorphicShadows,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.trending_up_rounded,
-                        color: theme.success,
-                        size: 24,
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: theme.success.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.success.withOpacity(0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.trending_up_rounded,
+                          color: theme.success,
+                          size: 20,
+                        ),
                       ),
                       const SizedBox(width: 12),
-                      Text(
-                        'Ingresos por Sucursal',
-                        style: theme.title3.override(
-                          fontFamily: 'Poppins',
-                          color: theme.primaryText,
-                          fontWeight: FontWeight.w600,
+                      Flexible(
+                        child: Text(
+                          'Ingresos por Sucursal',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: theme.primaryText,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                          maxLines: 1,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   Expanded(child: _buildBarChart(theme)),
                 ],
               ),
@@ -153,60 +146,53 @@ class _DashboardChartsSectionState extends State<DashboardChartsSection>
           child: Opacity(
             opacity: _chartAnimation.value,
             child: Container(
-              height: 300,
-              padding: const EdgeInsets.all(20),
+              height: 320,
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    theme.secondaryBackground.withOpacity(0.8),
-                    theme.primaryBackground.withOpacity(0.9),
-                  ],
-                ),
-                boxShadow: [
-                  // Neumorphism shadows
-                  BoxShadow(
-                    color: Colors.white.withOpacity(0.7),
-                    offset: const Offset(-6, -6),
-                    blurRadius: 16,
-                  ),
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.15),
-                    offset: const Offset(6, 6),
-                    blurRadius: 16,
-                  ),
-                  // Accent glow
-                  BoxShadow(
-                    color: theme.tertiaryColor.withOpacity(0.2),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
+                color: theme.secondaryBackground,
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: theme.neumorphicShadows,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.pie_chart_rounded,
-                        color: theme.tertiaryColor,
-                        size: 24,
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: theme.tertiaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: theme.tertiaryColor.withOpacity(0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.pie_chart_rounded,
+                          color: theme.tertiaryColor,
+                          size: 20,
+                        ),
                       ),
                       const SizedBox(width: 12),
-                      Text(
-                        'Estado de Órdenes',
-                        style: theme.title3.override(
-                          fontFamily: 'Poppins',
-                          color: theme.primaryText,
-                          fontWeight: FontWeight.w600,
+                      Flexible(
+                        child: Text(
+                          'Estado de Órdenes',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            color: theme.primaryText,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                          ),
+                          maxLines: 1,
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 24),
                   Expanded(child: _buildPieChart(theme)),
                 ],
               ),
@@ -317,11 +303,32 @@ class _DashboardChartsSectionState extends State<DashboardChartsSection>
 
     if (total == 0) {
       return Center(
-        child: Text(
-          'No hay datos de órdenes',
-          style: theme.bodyText1.override(
-            fontFamily: 'Poppins',
-            color: theme.secondaryText,
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: theme.primaryBackground,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: theme.neumorphicInsetShadows,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.bar_chart_rounded,
+                color: theme.tertiaryText,
+                size: 48,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'No hay datos',
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: theme.secondaryText,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -330,54 +337,100 @@ class _DashboardChartsSectionState extends State<DashboardChartsSection>
     return Row(
       children: [
         Expanded(
-          flex: 2,
-          child: PieChart(
-            PieChartData(
-              sectionsSpace: 2,
-              centerSpaceRadius: 40,
-              sections: [
-                PieChartSectionData(
-                  color: theme.tertiaryColor,
-                  value: abiertas.toDouble() * _chartAnimation.value,
-                  title: '${((abiertas / total) * 100).toStringAsFixed(0)}%',
-                  radius: 60,
-                  titleStyle: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+          flex: 3,
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.primaryBackground,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: theme.neumorphicInsetShadows,
+            ),
+            padding: const EdgeInsets.all(16),
+            child: PieChart(
+              PieChartData(
+                sectionsSpace: 4,
+                centerSpaceRadius: 45,
+                sections: [
+                  PieChartSectionData(
+                    color: theme.primaryColor,
+                    value: abiertas.toDouble() * _chartAnimation.value,
+                    title: '${abiertas}',
+                    radius: 50,
+                    titleStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                    ),
+                    titlePositionPercentageOffset: 0.6,
                   ),
-                ),
-                PieChartSectionData(
-                  color: theme.success,
-                  value: cerradas.toDouble() * _chartAnimation.value,
-                  title: '${((cerradas / total) * 100).toStringAsFixed(0)}%',
-                  radius: 60,
-                  titleStyle: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  PieChartSectionData(
+                    color: theme.success,
+                    value: cerradas.toDouble() * _chartAnimation.value,
+                    title: '${cerradas}',
+                    radius: 50,
+                    titleStyle: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontFamily: 'Poppins',
+                    ),
+                    titlePositionPercentageOffset: 0.6,
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
+        const SizedBox(width: 16),
         Expanded(
+          flex: 2,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               _buildLegendItem(
                 theme,
                 'Abiertas',
-                abiertas.toString(),
-                theme.tertiaryColor,
+                '$abiertas',
+                theme.primaryColor,
               ),
               const SizedBox(height: 12),
               _buildLegendItem(
                 theme,
                 'Cerradas',
-                cerradas.toString(),
+                '$cerradas',
                 theme.success,
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.primaryBackground,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: theme.neumorphicInsetShadows,
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      'Total',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        color: theme.secondaryText,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$total',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        color: theme.primaryText,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -392,42 +445,52 @@ class _DashboardChartsSectionState extends State<DashboardChartsSection>
     String value,
     Color color,
   ) {
-    return Row(
-      children: [
-        Container(
-          width: 12,
-          height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(3),
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: theme.primaryBackground,
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: theme.neumorphicInsetShadows,
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(6),
+            ),
           ),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: theme.bodyText2.override(
-                  fontFamily: 'Poppins',
-                  color: theme.secondaryText,
-                  fontSize: 11,
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: theme.secondaryText,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              Text(
-                value,
-                style: theme.bodyText1.override(
-                  fontFamily: 'Poppins',
-                  color: theme.primaryText,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: theme.primaryText,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

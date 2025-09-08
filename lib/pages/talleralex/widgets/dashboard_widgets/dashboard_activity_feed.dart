@@ -20,52 +20,46 @@ class DashboardActivityFeed extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.secondaryBackground.withOpacity(0.8),
-            theme.primaryBackground.withOpacity(0.9),
-          ],
-        ),
-        boxShadow: [
-          // Neumorphism shadows
-          BoxShadow(
-            color: Colors.white.withOpacity(0.7),
-            offset: const Offset(-6, -6),
-            blurRadius: 16,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            offset: const Offset(6, 6),
-            blurRadius: 16,
-          ),
-          // Accent glow
-          BoxShadow(
-            color: theme.primaryColor.withOpacity(0.2),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        color: theme.secondaryBackground,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: theme.neumorphicShadows,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                Icons.timeline_rounded,
-                color: theme.primaryColor,
-                size: 24,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: theme.primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: theme.primaryColor.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.timeline_rounded,
+                  color: theme.primaryColor,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
-              Text(
-                'Actividad Reciente',
-                style: theme.title3.override(
-                  fontFamily: 'Poppins',
-                  color: theme.primaryText,
-                  fontWeight: FontWeight.w600,
+              Flexible(
+                child: Text(
+                  isSmallScreen ? 'Actividad\nReciente' : 'Actividad Reciente',
+                  style: TextStyle(
+                    fontFamily: 'Poppins',
+                    color: theme.primaryText,
+                    fontWeight: FontWeight.w600,
+                    fontSize: isSmallScreen ? 14 : 16,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -124,11 +118,8 @@ class DashboardActivityFeed extends StatelessWidget {
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: theme.primaryBackground,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: theme.alternate.withOpacity(0.3),
-          width: 1,
-        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: theme.neumorphicInsetShadows,
       ),
       child: Row(
         children: [
@@ -151,7 +142,7 @@ class DashboardActivityFeed extends StatelessWidget {
               children: [
                 Text(
                   activity['title'] as String,
-                  style: theme.bodyText1.override(
+                  style: TextStyle(
                     fontFamily: 'Poppins',
                     color: theme.primaryText,
                     fontWeight: FontWeight.w500,
@@ -160,7 +151,7 @@ class DashboardActivityFeed extends StatelessWidget {
                 ),
                 Text(
                   activity['subtitle'] as String,
-                  style: theme.bodyText2.override(
+                  style: TextStyle(
                     fontFamily: 'Poppins',
                     color: theme.secondaryText,
                     fontSize: 11,
@@ -171,7 +162,7 @@ class DashboardActivityFeed extends StatelessWidget {
           ),
           Text(
             activity['time'] as String,
-            style: theme.bodyText2.override(
+            style: TextStyle(
               fontFamily: 'Poppins',
               color: theme.secondaryText,
               fontSize: 10,

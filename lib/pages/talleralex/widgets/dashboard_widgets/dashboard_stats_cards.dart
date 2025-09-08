@@ -75,14 +75,14 @@ class _DashboardStatsCardsState extends State<DashboardStatsCards>
       physics: const NeverScrollableScrollPhysics(),
       crossAxisCount:
           widget.isLargeScreen ? 6 : (widget.isMediumScreen ? 3 : 2),
-      crossAxisSpacing: 12,
-      mainAxisSpacing: 12,
-      childAspectRatio: widget.isSmallScreen ? 1.8 : 1.6,
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+      childAspectRatio: widget.isSmallScreen ? 1.2 : 1.4,
       children: [
         _buildAnimatedCard(
           0,
           theme,
-          'Citas de Hoy',
+          'Citas Hoy',
           widget.provider.citasHoyGlobal.toString(),
           Icons.calendar_today_rounded,
           theme.primaryColor,
@@ -92,8 +92,8 @@ class _DashboardStatsCardsState extends State<DashboardStatsCards>
         _buildAnimatedCard(
           1,
           theme,
-          'Ingresos Totales',
-          currencyFormat.format(widget.provider.ingresosTotalesGlobal),
+          'Ingresos',
+          '${(widget.provider.ingresosTotalesGlobal / 1000).toStringAsFixed(0)}K',
           Icons.attach_money_rounded,
           theme.success,
           '+12.5%',
@@ -102,44 +102,44 @@ class _DashboardStatsCardsState extends State<DashboardStatsCards>
         _buildAnimatedCard(
           2,
           theme,
-          'Órdenes Abiertas',
+          'Órdenes',
           widget.provider.ordenesAbiertasGlobal.toString(),
           Icons.build_circle_rounded,
           theme.tertiaryColor,
-          '${widget.provider.tasaOrdenesCerradas.toStringAsFixed(1)}%',
-          'tasa cierre',
+          '${widget.provider.tasaOrdenesCerradas.toStringAsFixed(0)}%',
+          'cierre',
         ),
         _buildAnimatedCard(
           3,
           theme,
-          'Sucursales Activas',
+          'Sucursales',
           widget.provider.totalSucursalesActivas.toString(),
           Icons.store_rounded,
-          Colors.blue,
+          const Color(0xFF3F51B5),
           '+2',
-          'este año',
+          'activas',
         ),
         _buildAnimatedCard(
           4,
           theme,
-          'Empleados Activos',
+          'Empleados',
           widget.provider.empleadosActivosGlobal.toString(),
           Icons.people_rounded,
-          Colors.purple,
-          '${widget.provider.promedioEmpleadosXSucursal.toStringAsFixed(1)}',
-          'por sucursal',
+          const Color(0xFF9C27B0),
+          '${widget.provider.promedioEmpleadosXSucursal.toStringAsFixed(0)}',
+          'promedio',
         ),
         _buildAnimatedCard(
           5,
           theme,
-          'Alertas Inventario',
+          'Alertas',
           widget.provider.refaccionesAlertaGlobal.toString(),
           Icons.warning_amber_rounded,
           widget.provider.refaccionesAlertaGlobal > 5
               ? theme.error
               : theme.warning,
           widget.provider.refaccionesAlertaGlobal > 5 ? 'Alto' : 'Normal',
-          'nivel riesgo',
+          'nivel',
         ),
       ],
     );
@@ -191,171 +191,102 @@ class _DashboardStatsCardsState extends State<DashboardStatsCards>
   ) {
     return Container(
       decoration: BoxDecoration(
+        color: theme.secondaryBackground,
         borderRadius: BorderRadius.circular(20),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.secondaryBackground.withOpacity(0.8),
-            theme.primaryBackground.withOpacity(0.9),
-          ],
-        ),
-        boxShadow: [
-          // Neumorphism shadows
-          BoxShadow(
-            color: Colors.white.withOpacity(0.7),
-            offset: const Offset(-6, -6),
-            blurRadius: 16,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            offset: const Offset(6, 6),
-            blurRadius: 16,
-          ),
-          // Accent glow
-          BoxShadow(
-            color: color.withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
+        boxShadow: theme.neumorphicShadows,
       ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Stack(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Animated background pattern
-            Positioned(
-              top: -20,
-              right: -20,
-              child: Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: RadialGradient(
-                    colors: [
-                      color.withOpacity(0.2),
-                      color.withOpacity(0.05),
-                      Colors.transparent,
+            // Header con icono
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withOpacity(0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
                     ],
+                  ),
+                  child: Icon(
+                    icon,
+                    color: color,
+                    size: widget.isSmallScreen ? 24 : 28,
                   ),
                 ),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: theme.primaryBackground,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: theme.neumorphicInsetShadows,
+                  ),
+                  child: Text(
+                    trend,
+                    style: TextStyle(
+                      color: color,
+                      fontSize: widget.isSmallScreen ? 11 : 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 12),
+
+            // Valor principal - más compacto
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                value,
+                style: TextStyle(
+                  fontFamily: 'Poppins',
+                  color: theme.primaryText,
+                  fontWeight: FontWeight.bold,
+                  fontSize: widget.isSmallScreen ? 28 : 32,
+                ),
+                maxLines: 1,
               ),
             ),
-            // Content
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Icon and title
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          gradient: LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              color.withOpacity(0.2),
-                              color.withOpacity(0.1),
-                            ],
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: color.withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          icon,
-                          color: color,
-                          size: 20,
-                        ),
-                      ),
-                    ],
-                  ),
 
-                  const SizedBox(height: 8),
+            const SizedBox(height: 4),
 
-                  // Value
-                  FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      value,
-                      style: theme.title2.override(
-                        fontFamily: 'Poppins',
-                        color: theme.primaryText,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 22,
-                      ),
-                      maxLines: 1,
-                    ),
-                  ),
-
-                  const SizedBox(height: 2),
-
-                  // Title
-                  Text(
-                    title,
-                    style: theme.bodyText2.override(
-                      fontFamily: 'Poppins',
-                      color: theme.secondaryText,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  // Trend indicator
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      gradient: LinearGradient(
-                        colors: [
-                          theme.success.withOpacity(0.2),
-                          theme.success.withOpacity(0.1),
-                        ],
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.trending_up,
-                          color: theme.success,
-                          size: 12,
-                        ),
-                        const SizedBox(width: 4),
-                        Flexible(
-                          child: Text(
-                            trend,
-                            style: theme.bodyText2.override(
-                              fontFamily: 'Poppins',
-                              color: theme.success,
-                              fontSize: 9,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+            // Título compacto
+            Text(
+              title,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: theme.secondaryText,
+                fontSize: widget.isSmallScreen ? 13 : 14,
+                fontWeight: FontWeight.w500,
               ),
+              maxLines: 1,
+            ),
+
+            const SizedBox(height: 4),
+
+            // Etiqueta de tendencia
+            Text(
+              trendLabel,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                color: theme.tertiaryText,
+                fontSize: widget.isSmallScreen ? 11 : 12,
+                fontWeight: FontWeight.w400,
+              ),
+              maxLines: 1,
             ),
           ],
         ),

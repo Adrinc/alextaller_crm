@@ -172,17 +172,7 @@ class _DashboardGlobalPageState extends State<DashboardGlobalPage>
   ) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.primaryBackground,
-            theme.secondaryBackground.withOpacity(0.3),
-            theme.primaryColor.withOpacity(0.05),
-            theme.secondaryColor.withOpacity(0.05),
-          ],
-          stops: const [0.0, 0.3, 0.7, 1.0],
-        ),
+        color: theme.primaryBackground,
       ),
       child: CustomScrollView(
         slivers: [

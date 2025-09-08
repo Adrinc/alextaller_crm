@@ -165,8 +165,8 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                               decoration: BoxDecoration(
                                 gradient: const LinearGradient(
                                   colors: [
-                                    Color(0xFF3B82F6),
-                                    Color(0xFF10B981)
+                                    Color.fromARGB(255, 237, 59, 246),
+                                    Color.fromARGB(255, 137, 16, 185)
                                   ],
                                 ),
                                 borderRadius: BorderRadius.circular(12),
@@ -217,7 +217,10 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                           height: 3,
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
-                              colors: [Color(0xFF10B981), Color(0xFF3B82F6)],
+                              colors: [
+                                Color.fromARGB(255, 185, 16, 162),
+                                Color.fromARGB(255, 199, 59, 246)
+                              ],
                             ),
                             borderRadius: BorderRadius.circular(2),
                           ),
@@ -273,7 +276,7 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   fontWeight: FontWeight.w400,
                 ),
                 decoration: InputDecoration(
-                  hintText: 'admin@nethive.com',
+                  hintText: 'admin@talleralex.com',
                   hintStyle: GoogleFonts.inter(
                     color: isMobile
                         ? Colors.white.withOpacity(0.6)
@@ -291,7 +294,7 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                      color: Color(0xFF10B981),
+                      color: Color.fromARGB(255, 185, 16, 171),
                       width: 2,
                     ),
                   ),
@@ -378,7 +381,7 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                      color: Color(0xFF10B981),
+                      color: const Color.fromARGB(255, 182, 16, 185),
                       width: 2,
                     ),
                   ),
@@ -427,9 +430,9 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   boxShadow: [
                     BoxShadow(
                       color: isMobile
-                          ? const Color(0xFF0369A1)
+                          ? const Color.fromARGB(255, 132, 3, 161)
                               .withOpacity(0.6) // Azul en móvil
-                          : const Color(0xFF10B981)
+                          : const Color.fromARGB(255, 182, 16, 185)
                               .withOpacity(0.4), // Verde en desktop
                       blurRadius: 20,
                       offset: const Offset(0, 8),
@@ -447,9 +450,10 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                         },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isMobile
-                        ? const Color(
-                            0xFF0369A1) // Azul más contrastante en móvil
-                        : const Color(0xFF10B981), // Verde en desktop
+                        ? const Color.fromARGB(
+                            255, 127, 3, 161) // Azul más contrastante en móvil
+                        : const Color.fromARGB(
+                            255, 185, 16, 176), // Verde en desktop
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -488,14 +492,14 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                   children: [
                     const Icon(
                       Icons.lock_outline,
-                      color: Color(0xFF10B981),
+                      color: const Color.fromARGB(255, 182, 16, 185),
                       size: 16,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'Conexión segura',
                       style: GoogleFonts.inter(
-                        color: const Color(0xFF10B981),
+                        color: const Color.fromARGB(255, 182, 16, 185),
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                       ),
@@ -527,7 +531,7 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
                         width: 6,
                         height: 6,
                         decoration: const BoxDecoration(
-                          color: Color(0xFF10B981),
+                          color: const Color.fromARGB(255, 182, 16, 185),
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -576,12 +580,12 @@ class _LoginFormState extends State<LoginForm> with TickerProviderStateMixin {
             width: 32,
             height: 32,
             decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withOpacity(0.1),
+              color: const Color.fromARGB(255, 182, 16, 185).withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               icon,
-              color: const Color(0xFF10B981),
+              color: const Color.fromARGB(255, 182, 16, 185),
               size: 16,
             ),
           ),

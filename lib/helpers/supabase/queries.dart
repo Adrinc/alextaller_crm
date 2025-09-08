@@ -45,7 +45,7 @@ class SupabaseQueries {
           .from('theme')
           .select('config')
           .eq('id', 1)
-          .eq('organization_fk', 10) // Filtrar por organización
+          .eq('organization_fk', 11) // Filtrar por organización
           .maybeSingle();
 
       print('🔍 [getDefaultTheme] Respuesta de la base de datos: $res');
@@ -90,7 +90,7 @@ class SupabaseQueries {
           .from('user_profile')
           .select('theme_fk, organization_fk')
           .eq('user_profile_id', user.id)
-          .eq('organization_fk', 10) // Filtrar por organización
+          .eq('organization_fk', 11) // Filtrar por organización
           .maybeSingle();
 
       print('🔍 [getUserTheme] Respuesta user_profile: $userProfileRes');
@@ -117,7 +117,7 @@ class SupabaseQueries {
           .from('theme')
           .select('config')
           .eq('id', themeFk)
-          .eq('organization_fk', 10) // Filtrar por organización
+          .eq('organization_fk', 11) // Filtrar por organización
           .maybeSingle();
 
       print('🔍 [getUserTheme] Respuesta theme: $themeRes');

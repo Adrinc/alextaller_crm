@@ -82,8 +82,8 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                       Color(
                           0xFF0F172A), // Azul muy oscuro (más oscuro para móvil)
                       Color(0xFF1E293B), // Azul oscuro
-                      Color(0xFF075985), // Azul medio oscuro
-                      Color(0xFF059669), // Verde más oscuro
+                      Color.fromARGB(255, 72, 7, 133), // Azul medio oscuro
+                      Color.fromARGB(255, 133, 5, 150), // Verde más oscuro
                     ],
                     stops: [0.0, 0.3, 0.7, 1.0],
                   ),
@@ -279,11 +279,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            Color(0xFF1E40AF), // Azul profundo
-                            Color(0xFF3B82F6), // Azul brillante
-                            Color(0xFF10B981), // Verde esmeralda
-                            Color(0xFF059669), // Verde intenso
-                            Color(0xFF7C3AED), // Púrpura
+                            Color.fromARGB(255, 26, 26, 26), // Azul profundo
+                            Color.fromARGB(255, 246, 59, 199), // Azul brillante
+                            Color.fromARGB(
+                                255, 185, 16, 182), // Verde esmeralda
+                            Color.fromARGB(255, 148, 5, 150), // Verde intenso
+                            Color.fromARGB(255, 21, 0, 56), // Púrpura
                           ],
                           stops: [0.0, 0.25, 0.5, 0.75, 1.0],
                         ),
