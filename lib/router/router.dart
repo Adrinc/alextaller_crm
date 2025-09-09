@@ -5,7 +5,7 @@ import 'package:nethive_neo/helpers/globals.dart';
 import 'package:nethive_neo/pages/talleralex/configuracion_page.dart';
 import 'package:nethive_neo/pages/talleralex/dashboard_global_page.dart';
 import 'package:nethive_neo/pages/talleralex/sucursales_page.dart';
-import 'package:nethive_neo/pages/talleralex/sucursal_layout.dart';
+import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/sucursal_layout.dart';
 import 'package:nethive_neo/pages/pages.dart';
 import 'package:nethive_neo/services/navigation_service.dart';
 

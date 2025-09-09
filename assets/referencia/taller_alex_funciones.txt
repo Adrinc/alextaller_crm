@@ -227,3 +227,89 @@ BEGIN
     RETURN v_factura_id;
 END;
 $$;
+
+-- 11. Función RPC parametrizable (ideal para filtros en el dashboard)
+
+
+CREATE OR REPLACE FUNCTION taller_alex.get_dashboard_sucursal(
+  p_sucursal_id uuid,
+  p_inicio date DEFAULT current_date,
+  p_fin date   DEFAULT current_date
+)
+RETURNS TABLE(
+  sucursal_id uuid,
+  sucursal_nombre text,
+  citas_total int,
+  citas_pendientes int,
+  citas_no_asistio int,
+  ordenes_abiertas int,
+  ordenes_cerradas int,
+  ingresos_total numeric,
+  bahias_totales int,
+  bahias_ocupadas int,
+  refacciones_alerta int
+)
+LANGUAGE sql
+AS $$
+  WITH base AS (
+    SELECT s.id, s.nombre
+    FROM taller_alex.sucursales s
+    WHERE s.id = p_sucursal_id
+  )
+  SELECT
+    b.id,
+    b.nombre,
+    -- Citas en rango
+    COUNT(DISTINCT c.id) FILTER (WHERE c.inicio::date BETWEEN p_inicio AND p_fin)                                   AS citas_total,
+    COUNT(DISTINCT c.id) FILTER (WHERE c.inicio::date BETWEEN p_inicio AND p_fin AND c.estado='pendiente')          AS citas_pendientes,
+    COUNT(DISTINCT c.id) FILTER (WHERE c.inicio::date BETWEEN p_inicio AND p_fin AND c.estado='no_asistio')         AS citas_no_asistio,
+    -- Órdenes
+    COUNT(DISTINCT os.id) FILTER (WHERE os.estado NOT IN ('cerrada','cancelada','entregada'))                       AS ordenes_abiertas,
+    COUNT(DISTINCT os.id) FILTER (WHERE os.estado IN ('cerrada','entregada') AND os.fecha_fin_real::date BETWEEN p_inicio AND p_fin) AS ordenes_cerradas,
+    -- Ingresos
+    COALESCE(SUM(p.monto) FILTER (WHERE p.estado='pagado' AND p.fecha_pago::date BETWEEN p_inicio AND p_fin),0)     AS ingresos_total,
+    -- Bahías
+    COUNT(DISTINCT bt.id)                                                                                            AS bahias_totales,
+    COUNT(DISTINCT ab.id) FILTER (WHERE ab.inicio::date BETWEEN p_inicio AND p_fin)                                  AS bahias_ocupadas,
+    -- Inventario
+    COUNT(ir.id) FILTER (WHERE ir.existencias <= ir.minimo_alerta)                                                   AS refacciones_alerta
+  FROM base b
+  LEFT JOIN taller_alex.citas c                 ON c.sucursal_id = b.id
+  LEFT JOIN taller_alex.ordenes_servicio os     ON os.cita_id = c.id
+  LEFT JOIN taller_alex.pagos p                 ON p.sucursal_id = b.id
+  LEFT JOIN taller_alex.bahias_trabajo bt       ON bt.sucursal_id = b.id
+  LEFT JOIN taller_alex.agenda_bahias ab        ON ab.bahia_id = bt.id
+  LEFT JOIN taller_alex.inventario_refacciones ir ON ir.sucursal_id = b.id
+  GROUP BY b.id, b.nombre;
+$$;
+
+-- 11. Función RPC reservar_bahia
+
+CREATE OR REPLACE FUNCTION taller_alex.reservar_bahia(
+  p_cita_id uuid,
+  p_bahia_id uuid,
+  p_inicio timestamptz,
+  p_fin timestamptz
+) RETURNS uuid
+LANGUAGE plpgsql AS $$
+DECLARE v_id uuid;
+BEGIN
+  IF p_fin <= p_inicio THEN
+    RAISE EXCEPTION 'Fin debe ser mayor a inicio';
+  END IF;
+
+  -- No solape en la misma bahía
+  IF EXISTS (
+    SELECT 1 FROM taller_alex.agenda_bahias ab
+    WHERE ab.bahia_id = p_bahia_id
+      AND tstzrange(ab.inicio, ab.fin, '[)') && tstzrange(p_inicio, p_fin, '[)')
+  ) THEN
+    RAISE EXCEPTION 'La bahía ya está ocupada en ese horario';
+  END IF;
+
+  INSERT INTO taller_alex.agenda_bahias (id, bahia_id, cita_id, inicio, fin)
+  VALUES (gen_random_uuid(), p_bahia_id, p_cita_id, p_inicio, p_fin)
+  RETURNING id INTO v_id;
+
+  RETURN v_id;
+END; $$;

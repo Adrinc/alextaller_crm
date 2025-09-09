@@ -124,3 +124,40 @@ citas_hoy (int) → opcional, para mostrar carga de trabajo inmediata en el mapa
 telefono (text)
 email_contacto (text)
 capacidad_bahias (int)
+
+-- vw_dashboard_sucursal --
+
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+citas_hoy (int) → número de citas con inicio en la fecha actual
+citas_pendientes_hoy (int) → citas de hoy en estado pendiente
+citas_no_asistio_hoy (int) → citas de hoy con estado no_asistio
+ordenes_abiertas (int) → órdenes activas (no cerradas, no entregadas, no canceladas)
+ordenes_cerradas_hoy (int) → órdenes cerradas o entregadas en la fecha actual
+ingresos_hoy (numeric) → suma de pagos con estado pagado en la fecha actual
+ingresos_mes (numeric) → suma de pagos con estado pagado en el mes actual
+bahias_totales (int) → cantidad de bahías registradas en la sucursal
+bahias_ocupadas_hoy (int) → cantidad de bahías reservadas/ocupadas en la fecha actual
+refacciones_alerta (int) → cantidad de refacciones con stock por debajo o igual al mínimo
+
+-- vw_reservas_bahias --
+
+reserva_id (uuid) (PK de agenda_bahias)
+bahia_id (uuid) (FK → bahias_trabajo.id)
+bahia_nombre (text)
+cita_id (uuid) (FK → citas.id)
+inicio (timestamptz)
+fin (timestamptz)
+cliente_nombre (text)
+vehiculo (text) → concatenación de marca + modelo + año
+estado_cita (estado_cita enum)
+
+-- vw_ocupacion_bahias_hoy --
+
+bahia_id (uuid) (FK → bahias_trabajo.id)
+bahia_nombre (text)
+sucursal_id (uuid) (FK → sucursales.id)
+reservas_hoy (int) → número de reservas hechas para hoy
+minutos_ocupados (int) → minutos totales ocupados en el día
+minutos_disponibles (int) → minutos libres en el día
+porcentaje_ocupacion (numeric) → % de utilización (ocupados / totales)

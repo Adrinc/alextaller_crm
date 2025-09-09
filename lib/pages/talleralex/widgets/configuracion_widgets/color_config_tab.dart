@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nethive_neo/pages/talleralex/widgets/configuracion_widgets/color_picker_widget.dart';
 import 'package:provider/provider.dart';
 import 'package:nethive_neo/providers/theme_config_provider.dart';
-import 'package:nethive_neo/pages/infrastructure/pages/widgets/configuracion_widgets/color_picker_widget.dart';
 import 'package:nethive_neo/theme/theme.dart';
 
 class ColorConfigTab extends StatelessWidget {
