@@ -14,6 +14,7 @@ import 'package:nethive_neo/providers/talleralex/sucursales_provider.dart';
 import 'package:nethive_neo/providers/talleralex/sucursal_provider.dart';
 import 'package:nethive_neo/providers/talleralex/dashboard_sucursal_provider.dart';
 import 'package:nethive_neo/providers/talleralex/agenda_bahias_provider.dart';
+import 'package:nethive_neo/providers/talleralex/empleados_provider.dart';
 import 'package:nethive_neo/providers/talleralex/clientes_provider.dart';
 import 'package:nethive_neo/providers/talleralex/navigation_provider.dart';
 import 'package:nethive_neo/providers/theme_config_provider.dart';
@@ -53,6 +54,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => SucursalProvider()),
         ChangeNotifierProvider(create: (_) => DashboardSucursalProvider()),
         ChangeNotifierProvider(create: (_) => AgendaBahiasProvider()),
+        ChangeNotifierProvider(create: (_) => EmpleadosProvider()),
         ChangeNotifierProvider(create: (_) => ClientesProvider()),
         ChangeNotifierProvider(create: (_) => TallerAlexNavigationProvider()),
         ChangeNotifierProvider(create: (_) => ThemeConfigProvider()),

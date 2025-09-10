@@ -313,3 +313,103 @@ BEGIN
 
   RETURN v_id;
 END; $$;
+
+
+-- 12. get_empleados_sucursal --
+
+CREATE OR REPLACE FUNCTION taller_alex.get_empleados_sucursal(
+  p_sucursal_id uuid,
+  p_inicio date DEFAULT current_date,
+  p_fin date   DEFAULT current_date
+)
+RETURNS TABLE(
+  empleado_id uuid,
+  empleado_nombre text,
+  puesto taller_alex.puesto_empleado,
+  activo boolean,
+  en_turno_now boolean,
+  turno_inicio timestamptz,
+  turno_fin timestamptz,
+  minutos_periodo int,
+  ordenes_abiertas int
+)
+LANGUAGE sql
+AS $$
+WITH turno_now AS (
+  SELECT t.empleado_id, TRUE en_turno_now, t.inicio, t.fin
+  FROM taller_alex.turnos_empleado t
+  WHERE now() BETWEEN t.inicio AND t.fin
+),
+base AS (
+  SELECT e.id AS empleado_id, u.nombre || ' ' || u.apellido AS empleado_nombre,
+         e.puesto, e.activo
+  FROM taller_alex.empleados e
+  JOIN taller_alex.usuarios u ON u.id = e.usuario_id
+  JOIN taller_alex.empleados_sucursales es ON es.empleado_id = e.id AND es.activo = TRUE
+  WHERE es.sucursal_id = p_sucursal_id
+),
+mins AS (
+  SELECT tt.empleado_id, COALESCE(SUM(tt.minutos),0)::int AS minutos_periodo
+  FROM taller_alex.tiempos_tecnico tt
+  WHERE tt.inicio::date BETWEEN p_inicio AND p_fin
+  GROUP BY tt.empleado_id
+),
+ords AS (
+  SELECT e.id AS empleado_id,
+         COUNT(DISTINCT os.id) FILTER (WHERE os.estado NOT IN ('cerrada','cancelada','entregada')) AS ordenes_abiertas
+  FROM taller_alex.empleados e
+  JOIN taller_alex.tiempos_tecnico tt ON tt.empleado_id = e.id
+  JOIN taller_alex.orden_items_servicio oi ON oi.id = tt.orden_item_id
+  JOIN taller_alex.ordenes_servicio os ON os.id = oi.orden_id
+  JOIN taller_alex.citas c ON c.id = os.cita_id
+  WHERE c.sucursal_id = p_sucursal_id
+  GROUP BY e.id
+)
+SELECT
+  b.empleado_id,
+  b.empleado_nombre,
+  b.puesto,
+  b.activo,
+  COALESCE(tn.en_turno_now, FALSE) AS en_turno_now,
+  tn.inicio AS turno_inicio,
+  tn.fin    AS turno_fin,
+  COALESCE(m.minutos_periodo,0)    AS minutos_periodo,
+  COALESCE(o.ordenes_abiertas,0)   AS ordenes_abiertas
+FROM base b
+LEFT JOIN turno_now tn ON tn.empleado_id = b.empleado_id
+LEFT JOIN mins m       ON m.empleado_id  = b.empleado_id
+LEFT JOIN ords o       ON o.empleado_id  = b.empleado_id
+ORDER BY b.empleado_nombre;
+$$;
+
+
+-- 13. programar_turno_empleado --
+
+CREATE OR REPLACE FUNCTION taller_alex.programar_turno_empleado(
+  p_empleado_id uuid,
+  p_sucursal_id uuid,
+  p_inicio timestamptz,
+  p_fin timestamptz,
+  p_tipo taller_alex.tipo_turno_empleado DEFAULT 'normal'
+) RETURNS uuid
+LANGUAGE plpgsql AS $$
+DECLARE v_id uuid;
+BEGIN
+  IF p_fin <= p_inicio THEN
+    RAISE EXCEPTION 'Fin debe ser mayor a inicio';
+  END IF;
+
+  -- (Opcional) Verificar que pertenece a la sucursal
+  IF NOT EXISTS (
+    SELECT 1 FROM taller_alex.empleados_sucursales
+    WHERE empleado_id = p_empleado_id AND sucursal_id = p_sucursal_id AND activo = TRUE
+  ) THEN
+    PERFORM taller_alex.asignar_empleado_a_sucursal(p_empleado_id, p_sucursal_id);
+  END IF;
+
+  INSERT INTO taller_alex.turnos_empleado (id, empleado_id, sucursal_id, inicio, fin, tipo)
+  VALUES (gen_random_uuid(), p_empleado_id, p_sucursal_id, p_inicio, p_fin, p_tipo)
+  RETURNING id INTO v_id;
+
+  RETURN v_id;
+END; $$;

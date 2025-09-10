@@ -152,12 +152,17 @@ recomendaciones (text)
 created_at (timestamptz DEFAULT now())
 
 -- empleados --
-id (uuid) (PK)
-usuario_id (uuid, UNIQUE) (FK → usuarios.id)
-puesto (puesto_empleado enum)
-activo (bool)
-created_at (timestamptz DEFAULT now())
-updated_at (timestamptz DEFAULT now())
+id uuid PRIMARY KEY,
+usuario_id uuid UNIQUE REFERENCES taller_alex.usuarios(id),
+puesto (puesto_empleado),
+activo (bool),
+created_at (timestamptz DEFAULT now()),
+updated_at (timestamptz DEFAULT now()),
+nombre (text),
+correo (text UNIQUE),
+telefono (text UNIQUE),
+direccion (text),
+imagen_id (uuid) REFERENCES taller_alex.archivos(id) ON DELETE SET NULL
 
 -- empleados_sucursales --
 id (uuid) (PK)

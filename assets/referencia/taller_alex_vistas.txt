@@ -161,3 +161,77 @@ reservas_hoy (int) → número de reservas hechas para hoy
 minutos_ocupados (int) → minutos totales ocupados en el día
 minutos_disponibles (int) → minutos libres en el día
 porcentaje_ocupacion (numeric) → % de utilización (ocupados / totales)
+
+
+
+-- vw_empleados_sucursal --
+
+empleado_id (uuid) (FK → empleados.id)
+empleado_nombre (text) → concat(nombre + apellido desde usuarios)
+puesto (puesto_empleado enum)
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+activo (bool)
+en_turno_now (bool) → true si está en un turno activo ahora
+turno_inicio (timestamptz, nullable)
+turno_fin (timestamptz, nullable)
+
+-- vw_desempeno_empleado_sucursal --
+
+empleado_id (uuid) (FK → empleados.id)
+sucursal_id (uuid) (FK → sucursales.id)
+minutos_hoy (int) → suma de minutos registrados en tiempos_tecnico en la fecha actual
+ordenes_abiertas (int) → órdenes de servicio no cerradas asociadas al empleado
+
+-- vw_empleados_grid --
+
+empleado_id (uuid)
+empleado_nombre (text)
+puesto (enum)
+activo (bool)
+correo (text)
+telefono (text)
+direccion (text)
+imagen_id (uuid)
+sucursal_id (uuid)
+sucursal_nombre (text)
+en_turno_now (bool)
+turno_inicio (timestamptz)
+turno_fin (timestamptz)
+minutos_hoy (int)
+ordenes_abiertas (int)
+
+
+-- vw_clientes_sucursal --
+
+cliente_id (uuid) (FK → clientes.id)
+cliente_nombre (text)
+correo (text)
+telefono (text)
+direccion (text)
+rfc (text)
+notas (text)
+total_vehiculos (int) → cantidad de vehículos registrados del cliente
+citas_proximas (int) → número de citas con inicio en o después de hoy
+ultima_visita (timestamptz) → fecha de la última orden finalizada
+total_gastado (numeric) → suma de pagos con estado pagado
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+
+
+-- vw_historial_cliente --
+
+cliente_id (uuid) (FK → clientes.id)
+cliente_nombre (text)
+vehiculo_id (uuid) (FK → vehiculos.id)
+placa (text)
+marca (text)
+modelo (text)
+anio (int)
+orden_id (uuid) (FK → ordenes_servicio.id)
+estado (estado_orden_servicio enum)
+fecha_inicio (timestamptz)
+fecha_fin_real (timestamptz)
+total_servicios (numeric) → suma de items de servicios en la orden
+total_refacciones (numeric) → suma de items de refacciones en la orden
+total_general (numeric) → total_servicios + total_refacciones

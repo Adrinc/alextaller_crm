@@ -324,7 +324,7 @@ class BahiasTable extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.timer,
                     color: Colors.green,
                     size: 16,
