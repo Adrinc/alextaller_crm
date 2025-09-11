@@ -322,10 +322,10 @@ id (uuid) (PK)
 categoria_id (uuid, FK → categorias_servicio.id)
 nombre (text)
 descripcion (text)
-precio_base (numeric)
+precio_sugerido (numeric)
 duracion_min (int)
 activo (bool)
-sucursal_id (uuid, FK → sucursales.id)
+
 
 -- sucursales --
 id (uuid) (PK)

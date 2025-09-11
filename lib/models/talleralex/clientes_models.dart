@@ -86,6 +86,8 @@ class ClienteGrid {
   final String? direccion;
   final String? rfc;
   final String? notas;
+  final String? imagenId;
+  final String? imagenPath;
   final int totalVehiculos;
   final int citasProximas;
   final DateTime? ultimaVisita;
@@ -99,6 +101,8 @@ class ClienteGrid {
     this.direccion,
     this.rfc,
     this.notas,
+    this.imagenId,
+    this.imagenPath,
     required this.totalVehiculos,
     required this.citasProximas,
     this.ultimaVisita,
@@ -114,6 +118,8 @@ class ClienteGrid {
       direccion: json['direccion'] as String?,
       rfc: json['rfc'] as String?,
       notas: json['notas'] as String?,
+      imagenId: json['imagen_id'] as String?,
+      imagenPath: json['imagen_path'] as String?,
       totalVehiculos: json['total_vehiculos'] as int,
       citasProximas: json['citas_proximas'] as int,
       ultimaVisita: json['ultima_visita'] != null

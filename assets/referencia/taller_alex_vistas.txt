@@ -36,6 +36,8 @@ anio (integer)
 sucursal_id (uuid)
 sucursal_nombre (text)
 servicios (ARRAY)
+imagen_id (uuid)
+imagen_path (text)
 
 -- vw_estado_vehiculo --
 
@@ -175,6 +177,8 @@ activo (bool)
 en_turno_now (bool) → true si está en un turno activo ahora
 turno_inicio (timestamptz, nullable)
 turno_fin (timestamptz, nullable)
+imagen_id (uuid)
+imagen_path (text)
 
 -- vw_desempeno_empleado_sucursal --
 
@@ -192,7 +196,6 @@ activo (bool)
 correo (text)
 telefono (text)
 direccion (text)
-imagen_id (uuid)
 sucursal_id (uuid)
 sucursal_nombre (text)
 en_turno_now (bool)
@@ -200,7 +203,8 @@ turno_inicio (timestamptz)
 turno_fin (timestamptz)
 minutos_hoy (int)
 ordenes_abiertas (int)
-
+imagen_id (uuid)
+imagen_path (text)
 
 -- vw_clientes_sucursal --
 
@@ -217,6 +221,8 @@ ultima_visita (timestamptz) → fecha de la última orden finalizada
 total_gastado (numeric) → suma de pagos con estado pagado
 sucursal_id (uuid) (FK → sucursales.id)
 sucursal_nombre (text)
+imagen_id (uuid)
+imagen_path (text)
 
 
 -- vw_historial_cliente --
@@ -235,3 +241,69 @@ fecha_fin_real (timestamptz)
 total_servicios (numeric) → suma de items de servicios en la orden
 total_refacciones (numeric) → suma de items de refacciones en la orden
 total_general (numeric) → total_servicios + total_refacciones
+imagen_id (uuid)
+imagen_path (text)
+
+
+-- vw_citas_activas_sucursal --
+
+cita_id (uuid) (FK → citas.id)
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+inicio (timestamptz)
+fin (timestamptz)
+estado (estado_cita enum)
+fuente (fuente_cita enum)
+cliente_id (uuid) (FK → clientes.id)
+cliente_nombre (text)
+vehiculo_id (uuid) (FK → vehiculos.id)
+placa (text)
+marca (text)
+modelo (text)
+anio (int)
+servicios (text[]) → lista de servicios solicitados en la cita
+bahia_id (uuid) (FK → bahias_trabajo.id, nullable)
+imagen_id (uuid)
+imagen_path (text)
+
+-- vw_ordenes_sucursal --
+
+orden_id (uuid) (FK → ordenes_servicio.id)
+numero (text) → folio único de la orden
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+estado (estado_orden_servicio enum)
+fecha_inicio (timestamptz)
+fecha_fin_estimada (timestamptz)
+fecha_fin_real (timestamptz)
+cliente_id (uuid) (FK → clientes.id)
+cliente_nombre (text)
+vehiculo_id (uuid) (FK → vehiculos.id)
+placa (text)
+marca (text)
+modelo (text)
+anio (int)
+total_servicios (numeric)
+total_refacciones (numeric)
+total_general (numeric)
+pagos (numeric) → suma de pagos con estado “pagado”
+saldo (numeric) → total_general – pagos
+imagen_id (uuid)
+imagen_path (text)
+
+-- vw_backlog_aprobaciones --
+
+orden_id (uuid) (FK → ordenes_servicio.id)
+numero (text) → número de orden
+sucursal_id (uuid) (FK → sucursales.id)
+cliente_nombre (text)
+placa (text)
+orden_item_id (uuid) (FK → orden_items_servicio.id)
+descripcion (text) → detalle del servicio/refacción pendiente
+cantidad (numeric)
+precio_unitario (numeric)
+subtotal (numeric)
+requiere_aprobacion (bool)
+aprobado (bool)
+aprobado_por (uuid, nullable)
+aprobado_en (timestamptz, nullable)

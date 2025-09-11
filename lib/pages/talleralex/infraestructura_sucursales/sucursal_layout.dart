@@ -10,6 +10,7 @@ import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/da
 import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/agenda/agenda_bahias_page.dart';
 import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/empleados/empleados_page.dart';
 import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/clientes/clientes_page.dart';
+import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/citas_ordenes/citas_ordenes_page.dart';
 
 class SucursalLayout extends StatefulWidget {
   final String sucursalId;
@@ -372,6 +373,11 @@ class _SucursalLayoutState extends State<SucursalLayout>
     // Contenido específico para clientes
     if (modulo == TallerAlexModulo.clientes) {
       return ClientesPage(sucursalId: widget.sucursalId);
+    }
+
+    // Contenido específico para citas y órdenes
+    if (modulo == TallerAlexModulo.citas) {
+      return CitasOrdenesPage(sucursalId: widget.sucursalId);
     }
 
     // Placeholder para otros módulos

@@ -51,6 +51,7 @@ class ClientesTable extends StatelessWidget {
           gridBorderColor: Colors.grey.shade300,
           borderColor: Colors.grey.shade300,
           gridBorderRadius: BorderRadius.circular(16),
+          rowHeight: 80,
         ),
         columnSize: const PlutoGridColumnSizeConfig(
           autoSizeMode: PlutoAutoSizeMode.scale,

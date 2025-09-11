@@ -59,7 +59,7 @@ class BahiasTable extends StatelessWidget {
           ),
           menuBackgroundColor: theme.secondaryBackground,
           gridBorderRadius: BorderRadius.circular(8),
-          rowHeight: 100,
+          rowHeight: 80,
         ),
         columnFilter: const PlutoGridColumnFilterConfig(
           filters: [
