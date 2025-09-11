@@ -89,6 +89,8 @@ sku (text)
 nombre (text)
 existencias (integer)
 minimo_alerta (integer)
+imagen_id (uuid)
+imagen_path (text)
 
 -- vw_totales_orden --
 
@@ -307,3 +309,41 @@ requiere_aprobacion (bool)
 aprobado (bool)
 aprobado_por (uuid, nullable)
 aprobado_en (timestamptz, nullable)
+
+
+
+-- vw_inventario_sucursal --
+
+refaccion_id (uuid) (FK → inventario_refacciones.id)
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+sku (text, UNIQUE)
+nombre (text)
+descripcion (text)
+proveedor (text)
+precio_unitario (numeric)
+existencias (int)
+minimo_alerta (int)
+activo (bool)
+imagen_id (uuid, FK → archivos.id, nullable)
+imagen_path (text, nullable)
+
+-- vw_historial_refacciones --
+
+orden_refaccion_id (uuid) (PK → orden_refacciones.id)
+orden_id (uuid) (FK → ordenes_servicio.id)
+numero_orden (text) → folio/número de orden
+estado_orden (estado_orden_servicio enum)
+cita_id (uuid) (FK → citas.id)
+cliente_nombre (text)
+placa (text)
+marca (text)
+modelo (text)
+refaccion_id (uuid) (FK → inventario_refacciones.id)
+sku (text)
+refaccion_nombre (text)
+cantidad (numeric)
+precio_unitario (numeric)
+subtotal (numeric)
+fecha_inicio (timestamptz) → inicio de la orden
+fecha_fin_real (timestamptz, nullable) → fin de la orden

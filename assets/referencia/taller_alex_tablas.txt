@@ -219,6 +219,7 @@ minimo_alerta (int)
 activo (bool)
 created_at (timestamptz DEFAULT now())
 updated_at (timestamptz DEFAULT now())
+imagen_id (uuid) REFERENCES taller_alex.archivos(id) ON DELETE SET NULL
 
 -- notificaciones --
 id (uuid) (PK)
