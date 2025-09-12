@@ -307,38 +307,6 @@ class _SucursalLayoutState extends State<SucursalLayout>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Título del módulo actual con gradiente
-              /*      ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
-                  colors: [
-                    theme.primaryColor,
-                    theme.secondaryColor,
-                  ],
-                ).createShader(bounds),
-                child: Text(
-                  navProvider.getNombreModulo(navProvider.moduloActual),
-                  style: theme.title1.override(
-                    fontFamily: 'Poppins',
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 8),
-
-              Text(
-                'Gestión avanzada de ${navProvider.getNombreModulo(navProvider.moduloActual).toLowerCase()}',
-                style: theme.bodyText1.override(
-                  fontFamily: 'Poppins',
-                  color: theme.secondaryText,
-                  fontSize: 16,
-                ),
-              ), */
-
-              /*      const SizedBox(height: 32), */
-
               // Contenido del módulo
               Expanded(
                 child: _buildModuleContent(

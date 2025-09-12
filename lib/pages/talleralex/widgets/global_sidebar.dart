@@ -18,31 +18,10 @@ class GlobalSidebar extends StatefulWidget {
   State<GlobalSidebar> createState() => _GlobalSidebarState();
 }
 
-class _GlobalSidebarState extends State<GlobalSidebar>
-    with TickerProviderStateMixin {
-  late AnimationController _pulseController;
-  late Animation<double> _pulseAnimation;
-
+class _GlobalSidebarState extends State<GlobalSidebar> {
   @override
   void initState() {
     super.initState();
-    _pulseController = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat(reverse: true);
-    _pulseAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _pulseController,
-      curve: Curves.easeInOut,
-    ));
-  }
-
-  @override
-  void dispose() {
-    _pulseController.dispose();
-    super.dispose();
   }
 
   @override
@@ -50,22 +29,14 @@ class _GlobalSidebarState extends State<GlobalSidebar>
     final theme = AppTheme.of(context);
 
     return Container(
-      width: widget.isDrawer ? MediaQuery.of(context).size.width * 0.8 : 280,
+      width: widget.isDrawer ? MediaQuery.of(context).size.width * 0.8 : 300,
       decoration: BoxDecoration(
-        color: theme.secondaryBackground,
-        border: widget.isDrawer
-            ? null
-            : Border(
-                right: BorderSide(
-                  color: theme.primaryColor.withOpacity(0.1),
-                  width: 1,
-                ),
-              ),
+        color: const Color(0xFFF0F0F3), // Mismo color neumórfico
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: widget.isDrawer ? const Offset(-2, 0) : const Offset(2, 0),
+            color: Colors.grey.shade400.withOpacity(0.3),
+            blurRadius: 20,
+            offset: widget.isDrawer ? const Offset(-5, 0) : const Offset(5, 0),
           ),
         ],
       ),
@@ -202,7 +173,7 @@ class _GlobalSidebarState extends State<GlobalSidebar>
 
   Widget _buildNavigationItems(AppTheme theme) {
     return ListView(
-      padding: EdgeInsets.symmetric(vertical: widget.isDrawer ? 12 : 16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       children: [
         _buildNavItem(
           theme,
@@ -240,28 +211,92 @@ class _GlobalSidebarState extends State<GlobalSidebar>
             }
           },
         ),
-        const SizedBox(height: 8),
-        _buildSectionDivider(theme, 'Administración'),
+        const SizedBox(height: 16),
+        _buildSectionDivider(theme, 'Gestión de Usuarios'),
         _buildNavItem(
           theme,
-          icon: Icons.business_center_rounded,
-          title: 'Administración Corporativa',
-          route: '/administracion-corporativa',
-          isActive: widget.currentRoute == '/administracion-corporativa',
+          icon: Icons.pending_actions_rounded,
+          title: 'Usuarios Pendientes',
+          route: '/usuarios-pendientes',
+          isActive: widget.currentRoute == '/usuarios-pendientes',
           onTap: () {
-            // TODO: Implementar navegación
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Función en desarrollo'),
-                backgroundColor: theme.warning,
-              ),
-            );
+            if (widget.currentRoute != '/usuarios-pendientes') {
+              context.go('/usuarios-pendientes');
+            }
             if (widget.isDrawer) {
               Navigator.of(context).pop();
               widget.onNavigate?.call();
             }
           },
         ),
+        _buildNavItem(
+          theme,
+          icon: Icons.groups_rounded,
+          title: 'Empleados Globales',
+          route: '/empleados-globales',
+          isActive: widget.currentRoute == '/empleados-globales',
+          onTap: () {
+            if (widget.currentRoute != '/empleados-globales') {
+              context.go('/empleados-globales');
+            }
+            if (widget.isDrawer) {
+              Navigator.of(context).pop();
+              widget.onNavigate?.call();
+            }
+          },
+        ),
+        _buildNavItem(
+          theme,
+          icon: Icons.people_alt_rounded,
+          title: 'Clientes Globales',
+          route: '/clientes-globales',
+          isActive: widget.currentRoute == '/clientes-globales',
+          onTap: () {
+            if (widget.currentRoute != '/clientes-globales') {
+              context.go('/clientes-globales');
+            }
+            if (widget.isDrawer) {
+              Navigator.of(context).pop();
+              widget.onNavigate?.call();
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        _buildSectionDivider(theme, 'Operaciones'),
+        _buildNavItem(
+          theme,
+          icon: Icons.inventory_2_rounded,
+          title: 'Inventario Global',
+          route: '/inventario-global',
+          isActive: widget.currentRoute == '/inventario-global',
+          onTap: () {
+            if (widget.currentRoute != '/inventario-global') {
+              context.go('/inventario-global');
+            }
+            if (widget.isDrawer) {
+              Navigator.of(context).pop();
+              widget.onNavigate?.call();
+            }
+          },
+        ),
+        _buildNavItem(
+          theme,
+          icon: Icons.local_offer_rounded,
+          title: 'Promociones Globales',
+          route: '/promociones-globales',
+          isActive: widget.currentRoute == '/promociones-globales',
+          onTap: () {
+            if (widget.currentRoute != '/promociones-globales') {
+              context.go('/promociones-globales');
+            }
+            if (widget.isDrawer) {
+              Navigator.of(context).pop();
+              widget.onNavigate?.call();
+            }
+          },
+        ),
+        const SizedBox(height: 16),
+        _buildSectionDivider(theme, 'Reportes'),
         _buildNavItem(
           theme,
           icon: Icons.analytics_rounded,
@@ -269,31 +304,60 @@ class _GlobalSidebarState extends State<GlobalSidebar>
           route: '/reportes-ejecutivos',
           isActive: widget.currentRoute == '/reportes-ejecutivos',
           onTap: () {
-            // TODO: Implementar navegación
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Text('Función en desarrollo'),
-                backgroundColor: theme.warning,
-              ),
-            );
+            if (widget.currentRoute != '/reportes-ejecutivos') {
+              context.go('/reportes-ejecutivos');
+            }
             if (widget.isDrawer) {
               Navigator.of(context).pop();
               widget.onNavigate?.call();
             }
           },
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 16),
+        _buildSectionDivider(theme, 'Administración'),
+        _buildNavItem(
+          theme,
+          icon: Icons.business_center_rounded,
+          title: 'Catálogos Corporativos',
+          route: '/catalogos-corporativos',
+          isActive: widget.currentRoute == '/catalogos-corporativos',
+          onTap: () {
+            if (widget.currentRoute != '/catalogos-corporativos') {
+              context.go('/catalogos-corporativos');
+            }
+            if (widget.isDrawer) {
+              Navigator.of(context).pop();
+              widget.onNavigate?.call();
+            }
+          },
+        ),
+        const SizedBox(height: 16),
         _buildSectionDivider(theme, 'Sistema'),
         _buildNavItem(
           theme,
-          icon: Icons.settings_rounded,
-          title: 'Configuración Global',
-          route: '/dashboard-global/configuracion',
-          isActive: widget.currentRoute == '/dashboard-global/configuracion',
+          icon: Icons.palette_rounded,
+          title: 'Configuración Visual',
+          route: '/configuracion-visual',
+          isActive: widget.currentRoute == '/configuracion-visual',
           onTap: () {
-            // Solo navegar si no estamos ya en esa ruta
-            if (widget.currentRoute != '/dashboard-global/configuracion') {
-              context.go('/dashboard-global/configuracion');
+            if (widget.currentRoute != '/configuracion-visual') {
+              context.go('/configuracion-visual');
+            }
+            if (widget.isDrawer) {
+              Navigator.of(context).pop();
+              widget.onNavigate?.call();
+            }
+          },
+        ),
+        _buildNavItem(
+          theme,
+          icon: Icons.settings_applications_rounded,
+          title: 'Configuración del Sistema',
+          route: '/configuracion-sistema',
+          isActive: widget.currentRoute == '/configuracion-sistema',
+          onTap: () {
+            if (widget.currentRoute != '/configuracion-sistema') {
+              context.go('/configuracion-sistema');
             }
             if (widget.isDrawer) {
               Navigator.of(context).pop();
@@ -314,64 +378,106 @@ class _GlobalSidebarState extends State<GlobalSidebar>
     required VoidCallback onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: isActive ? theme.primaryColor.withOpacity(0.1) : null,
-        border: isActive
-            ? Border.all(color: theme.primaryColor.withOpacity(0.3))
-            : null,
-      ),
+      margin: const EdgeInsets.only(bottom: 8),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: theme.secondaryBackground,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: isActive
+                  ? [
+                      // Sombras internas para elemento seleccionado
+                      BoxShadow(
+                        color: Colors.grey.shade400.withOpacity(0.4),
+                        offset: const Offset(4, 4),
+                        blurRadius: 8,
+                        spreadRadius: 0,
+                      ),
+                      BoxShadow(
+                        color: Colors.white,
+                        offset: const Offset(-4, -4),
+                        blurRadius: 8,
+                        spreadRadius: 0,
+                      ),
+                    ]
+                  : [
+                      // Sombras externas para elementos no seleccionados
+                      BoxShadow(
+                        color: Colors.white,
+                        offset: const Offset(-4, -4),
+                        blurRadius: 8,
+                        spreadRadius: 0,
+                      ),
+                      BoxShadow(
+                        color: Colors.grey.shade400.withOpacity(0.4),
+                        offset: const Offset(4, 4),
+                        blurRadius: 8,
+                        spreadRadius: 0,
+                      ),
+                    ],
+            ),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: isActive
-                        ? theme.primaryColor
-                        : theme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    gradient: isActive
+                        ? LinearGradient(
+                            colors: [
+                              theme.primaryColor,
+                              theme.secondaryColor,
+                            ],
+                          )
+                        : null,
+                    color:
+                        isActive ? null : theme.primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: isActive
+                        ? [
+                            BoxShadow(
+                              color: theme.primaryColor.withOpacity(0.3),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]
+                        : null,
                   ),
                   child: Icon(
                     icon,
-                    size: 20,
                     color: isActive ? Colors.white : theme.primaryColor,
+                    size: 22,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Text(
                     title,
                     style: theme.bodyText1.override(
                       fontFamily: 'Poppins',
                       color: isActive ? theme.primaryColor : theme.primaryText,
-                      fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+                      fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
+                      fontSize: 18,
                     ),
                   ),
                 ),
                 if (isActive)
-                  AnimatedBuilder(
-                    animation: _pulseAnimation,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _pulseAnimation.value,
-                        child: Container(
-                          width: 8,
-                          height: 8,
-                          decoration: BoxDecoration(
-                            color: theme.primaryColor,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      );
-                    },
+                  Container(
+                    width: 4,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          theme.primaryColor,
+                          theme.secondaryColor,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
               ],
             ),
@@ -418,54 +524,71 @@ class _GlobalSidebarState extends State<GlobalSidebar>
 
   Widget _buildFooter(AppTheme theme) {
     return Container(
-      padding: EdgeInsets.all(widget.isDrawer ? 12 : 16),
-      decoration: BoxDecoration(
-        color: theme.primaryBackground,
-        border: Border(
-          top: BorderSide(
-            color: theme.alternate.withOpacity(0.3),
-            width: 1,
-          ),
-        ),
-      ),
+      padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          Row(
-            children: [
-              Icon(
-                Icons.help_outline_rounded,
-                size: 16,
-                color: theme.secondaryText,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Ayuda y Soporte',
-                style: theme.bodyText2.override(
-                  fontFamily: 'Poppins',
-                  color: theme.secondaryText,
-                  fontSize: 12,
+          // Información de versión con estilo neumórfico
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF0F0F3),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.white,
+                  offset: const Offset(-4, -4),
+                  blurRadius: 8,
+                  spreadRadius: 0,
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Icon(
-                Icons.info_outline_rounded,
-                size: 16,
-                color: theme.secondaryText,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Versión 1.0.0',
-                style: theme.bodyText2.override(
-                  fontFamily: 'Poppins',
-                  color: theme.secondaryText,
-                  fontSize: 12,
+                BoxShadow(
+                  color: Colors.grey.shade400.withOpacity(0.4),
+                  offset: const Offset(4, 4),
+                  blurRadius: 8,
+                  spreadRadius: 0,
                 ),
-              ),
-            ],
+              ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.help_outline_rounded,
+                      size: 16,
+                      color: theme.secondaryText,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Ayuda y Soporte',
+                      style: theme.bodyText2.override(
+                        fontFamily: 'Poppins',
+                        color: theme.secondaryText,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: 16,
+                      color: theme.secondaryText,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Versión 1.0.0',
+                      style: theme.bodyText2.override(
+                        fontFamily: 'Poppins',
+                        color: theme.secondaryText,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ],
       ),

@@ -123,10 +123,10 @@ class _SucursalSidebarState extends State<SucursalSidebar>
               ),
 
               // Footer con botón de regreso
-              Container(
+              /*              Container(
                 padding: const EdgeInsets.all(24),
                 child: _buildBackButton(context, theme),
-              ),
+              ), */
             ],
           );
         },

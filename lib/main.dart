@@ -22,6 +22,7 @@ import 'package:nethive_neo/providers/talleralex/pagos_provider.dart';
 import 'package:nethive_neo/providers/talleralex/promociones_provider.dart';
 import 'package:nethive_neo/providers/talleralex/reportes_provider.dart';
 import 'package:nethive_neo/providers/talleralex/navigation_provider.dart';
+import 'package:nethive_neo/providers/talleralex/usuarios_pendientes_provider.dart';
 import 'package:nethive_neo/providers/theme_config_provider.dart';
 import 'package:nethive_neo/helpers/globals.dart';
 import 'package:url_strategy/url_strategy.dart';
@@ -67,6 +68,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => PromocionesProvider()),
         ChangeNotifierProvider(create: (_) => ReportesProvider()),
         ChangeNotifierProvider(create: (_) => TallerAlexNavigationProvider()),
+        ChangeNotifierProvider(create: (_) => UsuariosPendientesProvider()),
         ChangeNotifierProvider(create: (_) => ThemeConfigProvider()),
       ],
       child: const MyApp(),

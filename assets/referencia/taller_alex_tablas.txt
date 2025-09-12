@@ -376,6 +376,19 @@ inicio (timestamptz)
 fin (timestamptz)
 tipo (tipo_turno_empleado enum)
 
+-- usuarios --
+
+id (uuid) (PK, FK → auth.users.id)
+rol (USER-DEFINED enum)
+nombre (text)
+apellido (text, NULLABLE)
+telefono (text, NULLABLE)
+foto_url (text, NULLABLE)
+activo (boolean)
+estado (estado_usuario enum: 'pendiente','aprobado','rechazado' DEFAULT 'pendiente')
+created_at (timestamptz DEFAULT now())
+updated_at (timestamptz DEFAULT now())
+
 -- vehículos --
 
 id (uuid) (PK)

@@ -436,3 +436,17 @@ sucursal_nombre (text)
 refaccion_nombre (text)
 total_usada (numeric) → suma de cantidades usadas en órdenes
 total_ingresos (numeric) → suma de subtotales generados
+
+-- vw_usuarios_pendientes  --
+
+usuario_id (uuid)
+nombre (text)
+apellido (text)
+telefono (text)
+estado (estado_usuario)
+fecha_registro (timestamptz)
+dias_esperando (integer)
+organization_fk (bigint, NULLABLE)
+role_fk (bigint, NULLABLE)
+rol_nombre (text, NULLABLE)
+
