@@ -433,7 +433,7 @@ class ThemeTypography extends Typography {
   String get title1Family => 'Poppins';
   @override
   TextStyle get title1 => GoogleFonts.poppins(
-        fontSize: 70,
+        fontSize: 42,
         color: theme.primaryText,
         fontWeight: FontWeight.bold,
       );
@@ -441,7 +441,7 @@ class ThemeTypography extends Typography {
   String get title2Family => 'Poppins';
   @override
   TextStyle get title2 => GoogleFonts.poppins(
-        fontSize: 65,
+        fontSize: 38,
         color: theme.primaryText,
         fontWeight: FontWeight.bold,
       );
@@ -449,7 +449,7 @@ class ThemeTypography extends Typography {
   String get title3Family => 'Poppins';
   @override
   TextStyle get title3 => GoogleFonts.poppins(
-        fontSize: 48,
+        fontSize: 34,
         color: theme.primaryText,
         fontWeight: FontWeight.bold,
       );

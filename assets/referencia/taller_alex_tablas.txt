@@ -308,7 +308,15 @@ fecha_inicio (date)
 fecha_fin (date)
 activo (bool)
 condiciones_json (jsonb)
-sucursal_id (uuid, FK → sucursales.id)
+created_at (timestamptz, DEFAULT now())
+updated_at (timestamptz, DEFAULT now())
+
+-- promocion_sucursales --
+
+id (uuid) (PK)
+promocion_id (uuid) (FK → promociones.id, ON DELETE CASCADE)
+sucursal_id (uuid) (FK → sucursales.id, ON DELETE CASCADE)
+UNIQUE(promocion_id, sucursal_id)
 
 -- push_tokens --
 id (uuid) (PK)
@@ -341,6 +349,15 @@ created_at (timestamptz DEFAULT now())
 updated_at (timestamptz DEFAULT now())
 imagen_url (text)
 activa (bool)
+
+-- sucursal_servicios --
+id (uuid) (PK)
+sucursal_id (uuid) (FK → sucursales.id)
+servicio_id (uuid) (FK → servicios.id)
+precio (numeric)
+activo (bool)
+created_at (timestamptz DEFAULT now())
+updated_at (timestamptz DEFAULT now())
 
 -- tiempos_tecnico --
 id (uuid) (PK)

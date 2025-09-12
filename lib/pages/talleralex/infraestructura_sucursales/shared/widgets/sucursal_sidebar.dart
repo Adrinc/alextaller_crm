@@ -194,12 +194,12 @@ class _SucursalSidebarState extends State<SucursalSidebar>
         'subtitle': 'Análisis y métricas',
         'modulo': TallerAlexModulo.reportes
       },
-      {
+/*       {
         'icon': Icons.settings,
         'title': 'Configuración',
         'subtitle': 'Ajustes de sucursal',
         'modulo': TallerAlexModulo.configuracion
-      },
+      }, */
     ];
 
     return modulos.map((item) {

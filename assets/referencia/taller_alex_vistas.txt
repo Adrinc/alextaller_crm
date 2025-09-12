@@ -347,3 +347,92 @@ precio_unitario (numeric)
 subtotal (numeric)
 fecha_inicio (timestamptz) → inicio de la orden
 fecha_fin_real (timestamptz, nullable) → fin de la orden
+
+-- vw_pagos_detalle --
+
+pago_id (uuid) (FK → pagos.id)
+fecha_pago (timestamptz)
+monto (numeric)
+moneda (text)
+metodo (metodo_pago enum)
+estado (estado_pago enum)
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+orden_id (uuid) (FK → ordenes_servicio.id)
+numero_orden (text)
+cliente_id (uuid) (FK → clientes.id)
+cliente_nombre (text)
+cliente_rfc (text)
+vehiculo_id (uuid) (FK → vehiculos.id)
+placa (text)
+marca (text)
+modelo (text)
+factura_id (uuid, nullable) (FK → facturas.id)
+factura_folio (text, nullable)
+factura_fecha (timestamptz, nullable)
+pdf_url (text, nullable)
+xml_url (text, nullable)
+
+-- vw_pagos_totales_sucursal --
+
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+fecha (date/timestamptz) → agrupado por día (date_trunc('day', fecha_pago))
+cantidad_pagos (int)
+total_pagado (numeric) → suma de pagos con estado pagado
+total_pendiente (numeric) → suma de pagos con estado pendiente
+total_fallido (numeric) → suma de pagos con estado fallido
+
+-- vw_promociones_sucursal (vista) --
+
+promocion_id (uuid) (FK → promociones.id)
+titulo (text)
+descripcion (text)
+tipo_descuento (enum)
+valor_descuento (numeric)
+fecha_inicio (date)
+fecha_fin (date)
+activo (bool)
+condiciones_json (jsonb)
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+created_at (timestamptz)
+updated_at (timestamptz)
+
+
+-- vw_resumen_sucursal --
+
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+periodo (timestamptz / date trunc month) → mes de referencia
+total_citas (int)
+citas_completadas (int)
+citas_canceladas (int)
+total_ordenes (int)
+ordenes_abiertas (int) → en_proceso, pausada
+ordenes_cerradas (int) → cerrada, entregada
+
+-- vw_ingresos_sucursal --
+
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+fecha (date/timestamptz truncado a día)
+total_pagado (numeric) → suma de pagos con estado pagado
+total_pendiente (numeric) → suma de pagos con estado pendiente
+total_fallido (numeric) → suma de pagos con estado fallido
+
+-- vw_servicios_top_sucursal --
+
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+servicio_nombre (text)
+veces_solicitado (int) → cantidad de veces que aparece en órdenes
+total_ingresos (numeric) → suma de subtotales de ese servicio
+
+-- vw_refacciones_top_sucursal --
+
+sucursal_id (uuid) (FK → sucursales.id)
+sucursal_nombre (text)
+refaccion_nombre (text)
+total_usada (numeric) → suma de cantidades usadas en órdenes
+total_ingresos (numeric) → suma de subtotales generados

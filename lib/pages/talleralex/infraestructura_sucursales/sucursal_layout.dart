@@ -12,6 +12,9 @@ import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/em
 import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/clientes/clientes_page.dart';
 import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/citas_ordenes/citas_ordenes_page.dart';
 import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/inventario/inventario_page.dart';
+import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/pagos/pagos_page.dart';
+import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/promociones/promociones_page.dart';
+import 'package:nethive_neo/pages/talleralex/infraestructura_sucursales/pages/reportes/reportes_page.dart';
 
 class SucursalLayout extends StatefulWidget {
   final String sucursalId;
@@ -384,6 +387,21 @@ class _SucursalLayoutState extends State<SucursalLayout>
     // Contenido específico para inventario
     if (modulo == TallerAlexModulo.inventario) {
       return InventarioPage(sucursalId: widget.sucursalId);
+    }
+
+    // Contenido específico para pagos y facturación
+    if (modulo == TallerAlexModulo.pagos) {
+      return PagosPage(sucursalId: widget.sucursalId);
+    }
+
+    // Contenido específico para promociones
+    if (modulo == TallerAlexModulo.promociones) {
+      return PromocionesPage(sucursalId: widget.sucursalId);
+    }
+
+    // Contenido específico para reportes locales
+    if (modulo == TallerAlexModulo.reportes) {
+      return ReportesPage(sucursalId: widget.sucursalId);
     }
 
     // Placeholder para otros módulos
