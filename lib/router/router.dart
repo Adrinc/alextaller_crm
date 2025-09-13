@@ -10,7 +10,7 @@ import 'package:nethive_neo/services/navigation_service.dart';
 
 // Importar páginas globales
 import 'package:nethive_neo/pages/talleralex/global/usuarios_pendientes_page.dart';
-import 'package:nethive_neo/pages/talleralex/global/empleados_globales_page.dart';
+import 'package:nethive_neo/pages/talleralex/empleados_globales_page.dart';
 import 'package:nethive_neo/pages/talleralex/global/clientes_globales_page.dart';
 import 'package:nethive_neo/pages/talleralex/global/historial_servicios_page.dart';
 import 'package:nethive_neo/pages/talleralex/global/inventario_global_page.dart';

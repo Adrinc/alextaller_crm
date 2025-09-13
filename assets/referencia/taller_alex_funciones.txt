@@ -413,3 +413,40 @@ BEGIN
 
   RETURN v_id;
 END; $$;
+
+
+
+
+-- 1. Función para mover empleado entre sucursales
+CREATE OR REPLACE FUNCTION taller_alex.mover_empleado_sucursal(
+  p_empleado_id uuid,
+  p_nueva_sucursal_id uuid
+) RETURNS void
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  -- Cerrar asignación previa
+  UPDATE taller_alex.empleados_sucursales
+  SET activo = FALSE, fecha_fin = current_date
+  WHERE empleado_id = p_empleado_id AND activo = TRUE;
+
+  -- Asignar a nueva sucursal
+  PERFORM taller_alex.asignar_empleado_a_sucursal(p_empleado_id, p_nueva_sucursal_id);
+END;
+$$;
+
+-- 2. Función para cambiar rol de empleado
+CREATE OR REPLACE FUNCTION taller_alex.cambiar_rol_empleado(
+  p_usuario_id uuid,
+  p_role_id bigint
+) RETURNS void
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  UPDATE public.user_profile
+  SET role_fk = p_role_id,
+      updated_at = now()
+  WHERE user_profile_id = p_usuario_id
+    AND organization_fk = 11;
+END;
+$$;
