@@ -208,7 +208,7 @@ ordenes_abiertas (int)
 imagen_id (uuid)
 imagen_path (text)
 
--- vw_clientes_sucursal --
+-- vw_clientes_sucursal -- 
 
 cliente_id (uuid) (FK → clientes.id)
 cliente_nombre (text)
@@ -227,7 +227,7 @@ imagen_id (uuid)
 imagen_path (text)
 
 
--- vw_historial_cliente --
+-- vw_historial_cliente -- ((técnico: servicios, refacciones, totales))
 
 cliente_id (uuid) (FK → clientes.id)
 cliente_nombre (text)
@@ -348,6 +348,20 @@ subtotal (numeric)
 fecha_inicio (timestamptz) → inicio de la orden
 fecha_fin_real (timestamptz, nullable) → fin de la orden
 
+-- vw_historial_cliente_financiero -- (nuevo: ingresos pagados, sucursales)
+
+cliente_id (uuid)
+cliente_nombre (text)
+cita_id (uuid)
+cita_inicio (timestamptz)
+orden_id (uuid)
+orden_estado (enum)
+fecha_inicio (timestamptz)
+fecha_fin_real (timestamptz)
+sucursal_id (uuid)
+sucursal_nombre (text)
+total_pagado (numeric)
+
 -- vw_pagos_detalle --
 
 pago_id (uuid) (FK → pagos.id)
@@ -450,3 +464,16 @@ organization_fk (bigint, NULLABLE)
 role_fk (bigint, NULLABLE)
 rol_nombre (text, NULLABLE)
 
+-- vw_clientes_inactivos --
+
+cliente_id (uuid)
+cliente_nombre (text)
+ultima_visita (timestamptz)
+dias_inactivo (int)
+
+-- vw_clientes_sucursales_frecuentes --
+
+cliente_id (uuid)
+sucursal_id (uuid)
+sucursal_nombre (text)
+total_visitas (bigint)
