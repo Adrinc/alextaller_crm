@@ -176,14 +176,17 @@ class HistorialClienteTecnico {
   final String modelo;
   final int anio;
   final String ordenId;
+  final String numeroOrden;
   final String estado;
   final DateTime fechaInicio;
   final DateTime? fechaFinReal;
   final double totalServicios;
   final double totalRefacciones;
   final double totalGeneral;
+  final String? serviciosIncluidos;
   final String? imagenId;
   final String? imagenPath;
+  final bool activo;
 
   HistorialClienteTecnico({
     required this.clienteId,
@@ -194,14 +197,17 @@ class HistorialClienteTecnico {
     required this.modelo,
     required this.anio,
     required this.ordenId,
+    required this.numeroOrden,
     required this.estado,
     required this.fechaInicio,
     this.fechaFinReal,
     required this.totalServicios,
     required this.totalRefacciones,
     required this.totalGeneral,
+    this.serviciosIncluidos,
     this.imagenId,
     this.imagenPath,
+    required this.activo,
   });
 
   factory HistorialClienteTecnico.fromMap(Map<String, dynamic> map) {
@@ -214,6 +220,7 @@ class HistorialClienteTecnico {
       modelo: map['modelo'] ?? '',
       anio: map['anio'] ?? 0,
       ordenId: map['orden_id'] ?? '',
+      numeroOrden: map['numero_orden'] ?? '',
       estado: map['estado'] ?? '',
       fechaInicio: DateTime.parse(map['fecha_inicio']),
       fechaFinReal: map['fecha_fin_real'] != null
@@ -222,8 +229,10 @@ class HistorialClienteTecnico {
       totalServicios: (map['total_servicios'] ?? 0).toDouble(),
       totalRefacciones: (map['total_refacciones'] ?? 0).toDouble(),
       totalGeneral: (map['total_general'] ?? 0).toDouble(),
+      serviciosIncluidos: map['servicios_incluidos'],
       imagenId: map['imagen_id'],
       imagenPath: map['imagen_path'],
+      activo: map['activo'] ?? true,
     );
   }
 
@@ -248,6 +257,7 @@ class HistorialClienteFinanciero {
   final String citaId;
   final DateTime citaInicio;
   final String ordenId;
+  final String? numeroOrden;
   final String ordenEstado;
   final DateTime fechaInicio;
   final DateTime? fechaFinReal;
@@ -261,6 +271,7 @@ class HistorialClienteFinanciero {
     required this.citaId,
     required this.citaInicio,
     required this.ordenId,
+    this.numeroOrden,
     required this.ordenEstado,
     required this.fechaInicio,
     this.fechaFinReal,
@@ -276,6 +287,7 @@ class HistorialClienteFinanciero {
       citaId: map['cita_id'] ?? '',
       citaInicio: DateTime.parse(map['cita_inicio']),
       ordenId: map['orden_id'] ?? '',
+      numeroOrden: map['numero_orden'] ?? '',
       ordenEstado: map['orden_estado'] ?? '',
       fechaInicio: DateTime.parse(map['fecha_inicio']),
       fechaFinReal: map['fecha_fin_real'] != null
@@ -594,4 +606,189 @@ enum EstadoCliente {
   final String nombre;
 
   static List<EstadoCliente> get todos => EstadoCliente.values;
+}
+
+/// Modelo para representar un vehículo del cliente
+/// Basado en tabla vehiculos + fotos_vehiculo
+class VehiculoCliente {
+  final String vehiculoId;
+  final String clienteId;
+  final String marca;
+  final String modelo;
+  final int anio;
+  final String placa;
+  final String? color;
+  final String? vin;
+  final String? combustible;
+  final bool activo;
+  final String? fotoId;
+  final String? fotoPath;
+  final String? fotoTipo;
+
+  VehiculoCliente({
+    required this.vehiculoId,
+    required this.clienteId,
+    required this.marca,
+    required this.modelo,
+    required this.anio,
+    required this.placa,
+    this.color,
+    this.vin,
+    this.combustible,
+    required this.activo,
+    this.fotoId,
+    this.fotoPath,
+    this.fotoTipo,
+  });
+
+  /// Factory constructor desde Map (respuesta de Supabase)
+  factory VehiculoCliente.fromMap(Map<String, dynamic> map) {
+    return VehiculoCliente(
+      vehiculoId: map['id'] ?? map['vehiculo_id'] ?? '',
+      clienteId: map['cliente_id'] ?? '',
+      marca: map['marca'] ?? 'Sin marca',
+      modelo: map['modelo'] ?? 'Sin modelo',
+      anio: map['anio'] ?? DateTime.now().year,
+      placa: map['placa'] ?? 'Sin placa',
+      color: map['color'],
+      vin: map['vin'],
+      combustible: map['combustible'],
+      activo: map['activo'] ?? true,
+      fotoId: map['foto_id'] ?? map['archivo_id'],
+      fotoPath: map['foto_path'] ?? map['archivo_path'],
+      fotoTipo: map['foto_tipo'] ?? map['tipo'],
+    );
+  }
+
+  /// Getter para nombre completo del vehículo
+  String get nombreCompleto => '$marca $modelo $anio';
+
+  /// Getter para descripción breve
+  String get descripcionBreve => '$marca $modelo ($placa)';
+
+  /// Getter para estado formateado
+  String get estadoTexto => activo ? 'Activo' : 'Inactivo';
+
+  /// Getter para año como texto
+  String get anioTexto => anio.toString();
+
+  /// Map para enviar a Supabase
+  Map<String, dynamic> toMap() {
+    return {
+      'id': vehiculoId,
+      'cliente_id': clienteId,
+      'marca': marca,
+      'modelo': modelo,
+      'anio': anio,
+      'placa': placa,
+      'color': color,
+      'vin': vin,
+      'combustible': combustible,
+      'activo': activo,
+    };
+  }
+}
+
+/// Modelo para el historial de órdenes de un vehículo específico
+/// Basado en vista vw_historial_vehiculo
+class HistorialVehiculo {
+  final String vehiculoId;
+  final String placa;
+  final String marca;
+  final String modelo;
+  final int anio;
+  final String ordenId;
+  final String numeroOrden;
+  final DateTime fechaInicio;
+  final DateTime? fechaFinReal;
+  final String estado;
+  final double totalServicios;
+  final double totalRefacciones;
+  final double totalGeneral;
+  final String? tecnicoAsignado;
+  final String? observaciones;
+
+  HistorialVehiculo({
+    required this.vehiculoId,
+    required this.placa,
+    required this.marca,
+    required this.modelo,
+    required this.anio,
+    required this.ordenId,
+    required this.numeroOrden,
+    required this.fechaInicio,
+    this.fechaFinReal,
+    required this.estado,
+    required this.totalServicios,
+    required this.totalRefacciones,
+    required this.totalGeneral,
+    this.tecnicoAsignado,
+    this.observaciones,
+  });
+
+  /// Factory constructor desde Map (respuesta de Supabase)
+  factory HistorialVehiculo.fromMap(Map<String, dynamic> map) {
+    return HistorialVehiculo(
+      vehiculoId: map['vehiculo_id'] ?? '',
+      placa: map['placa'] ?? 'Sin placa',
+      marca: map['marca'] ?? 'Sin marca',
+      modelo: map['modelo'] ?? 'Sin modelo',
+      anio: map['anio'] ?? DateTime.now().year,
+      ordenId: map['orden_id'] ?? '',
+      numeroOrden: map['numero_orden'] ?? 'Sin número',
+      fechaInicio: DateTime.parse(map['fecha_inicio']),
+      fechaFinReal: map['fecha_fin_real'] != null
+          ? DateTime.parse(map['fecha_fin_real'])
+          : null,
+      estado: map['estado'] ?? 'Pendiente',
+      totalServicios: (map['total_servicios'] ?? 0).toDouble(),
+      totalRefacciones: (map['total_refacciones'] ?? 0).toDouble(),
+      totalGeneral: (map['total_general'] ?? 0).toDouble(),
+      tecnicoAsignado: map['tecnico_asignado'],
+      observaciones: map['observaciones'],
+    );
+  }
+
+  /// Getter para fecha de inicio formateada
+  String get fechaInicioTexto {
+    return DateFormat('dd/MM/yyyy').format(fechaInicio);
+  }
+
+  /// Getter para fecha de fin formateada
+  String get fechaFinTexto {
+    if (fechaFinReal == null) return 'En proceso';
+    return DateFormat('dd/MM/yyyy').format(fechaFinReal!);
+  }
+
+  /// Getter para duración del servicio
+  String get duracionTexto {
+    if (fechaFinReal == null) {
+      final diasTranscurridos = DateTime.now().difference(fechaInicio).inDays;
+      return '$diasTranscurridos días (en proceso)';
+    }
+
+    final duracion = fechaFinReal!.difference(fechaInicio).inDays;
+    return duracion == 0 ? 'Mismo día' : '$duracion días';
+  }
+
+  /// Getter para total formateado
+  String get totalTexto {
+    final formatter = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
+    return formatter.format(totalGeneral);
+  }
+
+  /// Getter para total servicios formateado
+  String get totalServiciosTexto {
+    final formatter = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
+    return formatter.format(totalServicios);
+  }
+
+  /// Getter para total refacciones formateado
+  String get totalRefaccionesTexto {
+    final formatter = NumberFormat.currency(locale: 'es_MX', symbol: '\$');
+    return formatter.format(totalRefacciones);
+  }
+
+  /// Getter para vehículo completo
+  String get vehiculoCompleto => '$marca $modelo $anio ($placa)';
 }

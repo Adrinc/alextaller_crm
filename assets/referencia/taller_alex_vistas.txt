@@ -245,6 +245,29 @@ total_refacciones (numeric) → suma de items de refacciones en la orden
 total_general (numeric) → total_servicios + total_refacciones
 imagen_id (uuid)
 imagen_path (text)
+activo (bool)
+numero_orden (text)
+servicios_incluidos (text)
+
+-- vw_historial_cliente_detalle --
+cliente_id (uuid) (FK → clientes.id)
+cliente_nombre (text)
+vehiculo_id (uuid) (FK → vehiculos.id)
+placa (text)
+marca (text)
+modelo (text)
+anio (int)
+orden_id (uuid) (FK → ordenes_servicio.id)
+numero_orden (text)
+estado_orden (estado_orden_servicio enum)
+fecha_inicio (timestamptz)
+fecha_fin_real (timestamptz)
+total_servicios (numeric) → suma de items de servicios en la orden
+total_refacciones (numeric) → suma de items de refacciones en la orden
+total_general (numeric) → total_servicios + total_refacciones
+servicios_incluidos (text) → lista de servicios concatenados por orden
+imagen_id (uuid) (FK → archivos.id)
+imagen_path (text)
 
 
 -- vw_citas_activas_sucursal --
@@ -361,6 +384,7 @@ fecha_fin_real (timestamptz)
 sucursal_id (uuid)
 sucursal_nombre (text)
 total_pagado (numeric)
+numero_orden (text)
 
 -- vw_pagos_detalle --
 

@@ -23,6 +23,12 @@ class ClientesGlobalesProvider extends ChangeNotifier {
   List<SucursalFrecuente> _sucursalesFrecuentes = [];
   String? _clienteSeleccionadoId;
 
+  // Vehículos del cliente seleccionado
+  List<VehiculoCliente> _vehiculosActivos = [];
+  List<VehiculoCliente> _vehiculosInactivos = [];
+  List<HistorialVehiculo> _historialVehiculo = [];
+  String? _vehiculoSeleccionadoId;
+
   // Filtros
   final FiltrosClientesGlobales _filtros = FiltrosClientesGlobales();
 
@@ -51,6 +57,12 @@ class ClientesGlobalesProvider extends ChangeNotifier {
       _historialFinanciero;
   List<SucursalFrecuente> get sucursalesFrecuentes => _sucursalesFrecuentes;
   String? get clienteSeleccionadoId => _clienteSeleccionadoId;
+
+  // Vehículos del cliente seleccionado
+  List<VehiculoCliente> get vehiculosActivos => _vehiculosActivos;
+  List<VehiculoCliente> get vehiculosInactivos => _vehiculosInactivos;
+  List<HistorialVehiculo> get historialVehiculo => _historialVehiculo;
+  String? get vehiculoSeleccionadoId => _vehiculoSeleccionadoId;
 
   // Estadísticas calculadas
   int get totalClientes => _clientes.length;
@@ -324,12 +336,170 @@ class ClientesGlobalesProvider extends ChangeNotifier {
     }
   }
 
-  /// 8. Cargar historial completo de un cliente (técnico + financiero + sucursales)
+  /// 8. Cargar vehículos activos de un cliente
+  Future<void> cargarVehiculosActivos(String clienteId) async {
+    if (_clienteSeleccionadoId == clienteId && _vehiculosActivos.isNotEmpty) {
+      developer.log('✅ Vehículos activos ya cargados para cliente $clienteId');
+      return;
+    }
+
+    try {
+      developer.log('🔄 Cargando vehículos activos del cliente $clienteId...');
+
+      _clienteSeleccionadoId = clienteId;
+
+      final response = await supabaseLU
+          .from('vehiculos')
+          .select('''
+            id, cliente_id, marca, modelo, anio, placa, color, vin, combustible, activo,
+            fotos_vehiculo!left(archivo_id, tipo, archivos!left(path))
+          ''')
+          .eq('cliente_id', clienteId)
+          .eq('activo', true)
+          .order('created_at', ascending: false);
+
+      _vehiculosActivos = (response as List).map((vehiculoData) {
+        // Extraer la foto principal (frontal o primera disponible)
+        final fotos = vehiculoData['fotos_vehiculo'] as List? ?? [];
+        String? fotoId;
+        String? fotoPath;
+        String? fotoTipo;
+
+        if (fotos.isNotEmpty) {
+          final fotoFrontal = fotos.firstWhere(
+            (foto) => foto['tipo'] == 'frontal',
+            orElse: () => fotos.first,
+          );
+
+          fotoId = fotoFrontal['archivo_id'];
+          fotoTipo = fotoFrontal['tipo'];
+          if (fotoFrontal['archivos'] != null) {
+            fotoPath = fotoFrontal['archivos']['path'];
+          }
+        }
+
+        return VehiculoCliente.fromMap({
+          ...vehiculoData,
+          'foto_id': fotoId,
+          'foto_path': fotoPath,
+          'foto_tipo': fotoTipo,
+        });
+      }).toList();
+
+      developer.log('✅ ${_vehiculosActivos.length} vehículos activos cargados');
+      notifyListeners();
+    } catch (e) {
+      developer.log('❌ Error al cargar vehículos activos: $e');
+      _vehiculosActivos = [];
+    }
+  }
+
+  /// 9. Cargar vehículos inactivos de un cliente
+  Future<void> cargarVehiculosInactivos(String clienteId) async {
+    if (_clienteSeleccionadoId == clienteId && _vehiculosInactivos.isNotEmpty) {
+      developer
+          .log('✅ Vehículos inactivos ya cargados para cliente $clienteId');
+      return;
+    }
+
+    try {
+      developer
+          .log('🔄 Cargando vehículos inactivos del cliente $clienteId...');
+
+      final response = await supabaseLU
+          .from('vehiculos')
+          .select('''
+            id, cliente_id, marca, modelo, anio, placa, color, vin, combustible, activo,
+            fotos_vehiculo!left(archivo_id, tipo, archivos!left(path))
+          ''')
+          .eq('cliente_id', clienteId)
+          .eq('activo', false)
+          .order('created_at', ascending: false);
+
+      _vehiculosInactivos = (response as List).map((vehiculoData) {
+        // Extraer la foto principal
+        final fotos = vehiculoData['fotos_vehiculo'] as List? ?? [];
+        String? fotoId;
+        String? fotoPath;
+        String? fotoTipo;
+
+        if (fotos.isNotEmpty) {
+          final fotoFrontal = fotos.firstWhere(
+            (foto) => foto['tipo'] == 'frontal',
+            orElse: () => fotos.first,
+          );
+
+          fotoId = fotoFrontal['archivo_id'];
+          fotoTipo = fotoFrontal['tipo'];
+          if (fotoFrontal['archivos'] != null) {
+            fotoPath = fotoFrontal['archivos']['path'];
+          }
+        }
+
+        return VehiculoCliente.fromMap({
+          ...vehiculoData,
+          'foto_id': fotoId,
+          'foto_path': fotoPath,
+          'foto_tipo': fotoTipo,
+        });
+      }).toList();
+
+      developer
+          .log('✅ ${_vehiculosInactivos.length} vehículos inactivos cargados');
+      notifyListeners();
+    } catch (e) {
+      developer.log('❌ Error al cargar vehículos inactivos: $e');
+      _vehiculosInactivos = [];
+    }
+  }
+
+  /// 10. Cargar historial de órdenes de un vehículo específico
+  Future<void> cargarHistorialVehiculo(String vehiculoId) async {
+    if (_vehiculoSeleccionadoId == vehiculoId &&
+        _historialVehiculo.isNotEmpty) {
+      developer.log('✅ Historial de vehículo ya cargado para $vehiculoId');
+      return;
+    }
+
+    try {
+      developer.log('🔄 Cargando historial del vehículo $vehiculoId...');
+
+      _vehiculoSeleccionadoId = vehiculoId;
+
+      final response = await supabaseLU
+          .from('vw_historial_vehiculo')
+          .select()
+          .eq('vehiculo_id', vehiculoId)
+          .order('fecha_inicio', ascending: false);
+
+      _historialVehiculo = (response as List)
+          .map((item) => HistorialVehiculo.fromMap(item))
+          .toList();
+
+      developer.log(
+          '✅ ${_historialVehiculo.length} registros de historial cargados');
+      notifyListeners();
+    } catch (e) {
+      developer.log('❌ Error al cargar historial del vehículo: $e');
+      _historialVehiculo = [];
+    }
+  }
+
+  /// 11. Cargar todos los vehículos de un cliente (activos + inactivos)
+  Future<void> cargarTodosLosVehiculos(String clienteId) async {
+    await Future.wait([
+      cargarVehiculosActivos(clienteId),
+      cargarVehiculosInactivos(clienteId),
+    ]);
+  }
+
+  /// 12. Cargar historial completo de un cliente (técnico + financiero + sucursales + vehículos)
   Future<void> cargarHistorialCompleto(String clienteId) async {
     await Future.wait([
       cargarHistorialTecnico(clienteId),
       cargarHistorialFinanciero(clienteId),
       cargarSucursalesFrecuentes(clienteId),
+      cargarTodosLosVehiculos(clienteId),
     ]);
   }
 
@@ -480,7 +650,34 @@ class ClientesGlobalesProvider extends ChangeNotifier {
     _historialTecnico = [];
     _historialFinanciero = [];
     _sucursalesFrecuentes = [];
+    _vehiculosActivos = [];
+    _vehiculosInactivos = [];
+    _historialVehiculo = [];
+    _vehiculoSeleccionadoId = null;
     notifyListeners();
+  }
+
+  /// Limpiar datos del historial de vehículo al cambiar de vehículo
+  void limpiarHistorialVehiculo() {
+    _vehiculoSeleccionadoId = null;
+    _historialVehiculo = [];
+    notifyListeners();
+  }
+
+  /// Obtener vehículo por ID
+  VehiculoCliente? getVehiculoById(String vehiculoId) {
+    try {
+      // Buscar en vehículos activos primero
+      try {
+        return _vehiculosActivos.firstWhere((v) => v.vehiculoId == vehiculoId);
+      } catch (e) {
+        // Si no está en activos, buscar en inactivos
+        return _vehiculosInactivos
+            .firstWhere((v) => v.vehiculoId == vehiculoId);
+      }
+    } catch (e) {
+      return null;
+    }
   }
 
   /// Recargar todos los datos principales

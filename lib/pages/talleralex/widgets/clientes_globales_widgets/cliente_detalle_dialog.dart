@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:nethive_neo/providers/talleralex/clientes_globales_provider.dart';
 import 'package:nethive_neo/theme/theme.dart';
+import 'vehiculos_cliente_widget.dart';
+import 'vehiculo_historial_dialog.dart';
 
 class ClienteDetalleDialog extends StatefulWidget {
   final String clienteId;
@@ -31,7 +33,7 @@ class _ClienteDetalleDialogState extends State<ClienteDetalleDialog>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     _initializeAnimations();
 
     // Cargar historial completo del cliente
@@ -274,6 +276,10 @@ class _ClienteDetalleDialogState extends State<ClienteDetalleDialog>
                               icon: Icon(Icons.location_on_rounded, size: 20),
                               text: 'Sucursales',
                             ),
+                            Tab(
+                              icon: Icon(Icons.directions_car, size: 20),
+                              text: 'Vehículos',
+                            ),
                           ],
                         ),
                       ),
@@ -303,6 +309,7 @@ class _ClienteDetalleDialogState extends State<ClienteDetalleDialog>
                       _buildHistorialTecnico(),
                       _buildHistorialFinanciero(),
                       _buildSucursalesFrecuentes(),
+                      _buildVehiculos(),
                     ],
                   ),
                 ),
@@ -397,6 +404,7 @@ class _ClienteDetalleDialogState extends State<ClienteDetalleDialog>
                     Tab(text: 'Técnico'),
                     Tab(text: 'Financiero'),
                     Tab(text: 'Sucursales'),
+                    Tab(text: 'Vehículos'),
                   ],
                 ),
               ],
@@ -411,6 +419,7 @@ class _ClienteDetalleDialogState extends State<ClienteDetalleDialog>
                 _buildHistorialTecnico(),
                 _buildHistorialFinanciero(),
                 _buildSucursalesFrecuentes(),
+                _buildVehiculos(),
               ],
             ),
           ),
@@ -670,7 +679,7 @@ class _ClienteDetalleDialogState extends State<ClienteDetalleDialog>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Orden #${registro.ordenId}',
+                          'Orden #${registro.numeroOrden}',
                           style: theme.bodyText1.override(
                             fontFamily: 'Poppins',
                             fontWeight: FontWeight.w600,
@@ -716,6 +725,53 @@ class _ClienteDetalleDialogState extends State<ClienteDetalleDialog>
                   fontSize: 14,
                 ),
               ),
+              if (registro.serviciosIncluidos != null &&
+                  registro.serviciosIncluidos!.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.blue.withOpacity(0.2),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.build_rounded,
+                            size: 16,
+                            color: theme.primaryColor,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Servicios incluidos:',
+                            style: theme.bodyText2.override(
+                              fontFamily: 'Poppins',
+                              color: theme.primaryColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        registro.serviciosIncluidos!,
+                        style: theme.bodyText2.override(
+                          fontFamily: 'Poppins',
+                          color: theme.primaryText,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
               const SizedBox(height: 8),
               Container(
                 padding: const EdgeInsets.all(12),
@@ -814,7 +870,7 @@ class _ClienteDetalleDialogState extends State<ClienteDetalleDialog>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Orden #${registro.ordenId} - ${registro.sucursalNombre}',
+                      'Orden #${registro.numeroOrden ?? registro.ordenId} - ${registro.sucursalNombre}',
                       style: theme.bodyText1.override(
                         fontFamily: 'Poppins',
                         color: theme.primaryText,
@@ -1025,6 +1081,22 @@ class _ClienteDetalleDialogState extends State<ClienteDetalleDialog>
       default:
         return Icons.person_outline;
     }
+  }
+
+  Widget _buildVehiculos() {
+    return VehiculosClienteWidget(
+      clienteId: widget.clienteId,
+      provider: widget.provider,
+      onVerHistorial: (vehiculo) {
+        showDialog(
+          context: context,
+          builder: (context) => VehiculoHistorialDialog(
+            vehiculo: vehiculo,
+            provider: widget.provider,
+          ),
+        );
+      },
+    );
   }
 
   Color _getEstadoColor(String estado) {
