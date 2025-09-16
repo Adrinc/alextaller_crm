@@ -109,6 +109,7 @@ class _ClientesPageState extends State<ClientesPage>
                     return ClientesTable(
                       provider: provider,
                       sucursalId: widget.sucursalId,
+                      sucursalNombre: 'Sucursal ${widget.sucursalId}',
                     );
                   },
                 ),

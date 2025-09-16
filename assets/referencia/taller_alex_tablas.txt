@@ -209,7 +209,7 @@ created_at (timestamptz DEFAULT now())
 -- inventario_refacciones --
 id (uuid) (PK)
 sucursal_id (uuid) (FK → sucursales.id)
-sku (text UNIQUE)
+sku (text)
 nombre (text)
 descripcion (text)
 proveedor (text)
@@ -220,6 +220,24 @@ activo (bool)
 created_at (timestamptz DEFAULT now())
 updated_at (timestamptz DEFAULT now())
 imagen_id (uuid) REFERENCES taller_alex.archivos(id) ON DELETE SET NULL
+fecha_caducidad (date)
+
+
+
+-- movimientos_inventario --
+
+id (uuid) (PK)
+refaccion_id (uuid) (FK → inventario_refacciones.id)
+tipo (text) CHECK (tipo IN ('entrada','salida','ajuste'))
+cantidad (integer)
+stock_anterior (integer)
+stock_actual (integer)
+usuario_id (uuid) (FK → usuarios.id)
+fecha_movimiento (timestamptz DEFAULT now())
+motivo (text)
+created_at (timestamptz DEFAULT now())
+sucursal_id (uuid) (FK → sucursales.id)
+
 
 -- notificaciones --
 id (uuid) (PK)

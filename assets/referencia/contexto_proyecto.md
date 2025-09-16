@@ -154,3 +154,7 @@ Basado en la identidad de Taller Alex (ver referencia de promociones):
 **Fecha de creación**: 4 de septiembre de 2025  
 **Versión**: 1.0  
 **Proyecto**: Taller Alex CRM - Sistema de Gestión de Talleres Automotrices  
+
+
+
+

@@ -5,16 +5,30 @@ import 'package:pluto_grid/pluto_grid.dart';
 
 import 'package:nethive_neo/theme/theme.dart';
 import 'package:nethive_neo/providers/talleralex/clientes_provider.dart';
+import 'package:nethive_neo/models/talleralex/clientes_models.dart';
+import 'package:nethive_neo/pages/talleralex/widgets/clientes_globales_widgets/universal_cliente_detalle_dialog.dart';
+import 'package:nethive_neo/pages/talleralex/widgets/clientes_globales_widgets/universal_cliente_opciones_dialog.dart';
 
-class ClientesTable extends StatelessWidget {
+class ClientesTable extends StatefulWidget {
   final ClientesProvider provider;
   final String sucursalId;
+  final String sucursalNombre;
 
   const ClientesTable({
     super.key,
     required this.provider,
     required this.sucursalId,
+    required this.sucursalNombre,
   });
+
+  @override
+  State<ClientesTable> createState() => _ClientesTableState();
+}
+
+class _ClientesTableState extends State<ClientesTable> {
+  ClientesProvider get provider => widget.provider;
+  String get sucursalId => widget.sucursalId;
+  String get sucursalNombre => widget.sucursalNombre;
 
   @override
   Widget build(BuildContext context) {
@@ -515,8 +529,8 @@ class ClientesTable extends StatelessWidget {
         title: 'Acciones',
         field: 'acciones',
         type: PlutoColumnType.text(),
-        width: 120,
-        minWidth: 120,
+        width: 180,
+        minWidth: 180,
         enableSorting: false,
         enableColumnDrag: false,
         enableEditingMode: false,
@@ -528,7 +542,7 @@ class ClientesTable extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Botón ver detalles
+                // Botón ver detalles completo
                 Container(
                   width: 32,
                   height: 32,
@@ -549,7 +563,7 @@ class ClientesTable extends StatelessWidget {
                         final cliente = provider.clientesFiltrados.firstWhere(
                           (c) => c.clienteId == clienteId,
                         );
-                        provider.seleccionarCliente(cliente);
+                        _mostrarDetalleCompleto(context, cliente);
                       },
                       child: Icon(
                         Icons.visibility,
@@ -559,15 +573,15 @@ class ClientesTable extends StatelessWidget {
                     ),
                   ),
                 ),
-                // Botón editar
+                // Botón opciones/contactar
                 Container(
                   width: 32,
                   height: 32,
                   decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
+                    color: Colors.green.shade50,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: Colors.orange.shade200,
+                      color: Colors.green.shade200,
                       width: 1,
                     ),
                   ),
@@ -576,12 +590,47 @@ class ClientesTable extends StatelessWidget {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(8),
                       onTap: () {
-                        // Aquí puedes agregar lógica de edición
+                        final clienteId = rendererContext.cell.value.toString();
+                        final cliente = provider.clientesFiltrados.firstWhere(
+                          (c) => c.clienteId == clienteId,
+                        );
+                        _mostrarOpcionesCliente(context, cliente);
                       },
                       child: Icon(
-                        Icons.edit,
+                        Icons.phone,
                         size: 16,
-                        color: Colors.orange.shade600,
+                        color: Colors.green.shade600,
+                      ),
+                    ),
+                  ),
+                ),
+                // Botón más opciones
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: Colors.purple.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(
+                      color: Colors.purple.shade200,
+                      width: 1,
+                    ),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(8),
+                      onTap: () {
+                        final clienteId = rendererContext.cell.value.toString();
+                        final cliente = provider.clientesFiltrados.firstWhere(
+                          (c) => c.clienteId == clienteId,
+                        );
+                        _mostrarOpcionesCompletas(context, cliente);
+                      },
+                      child: Icon(
+                        Icons.more_horiz,
+                        size: 16,
+                        color: Colors.purple.shade600,
                       ),
                     ),
                   ),
@@ -680,6 +729,38 @@ class ClientesTable extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  // Métodos para manejar los popups universales
+  void _mostrarDetalleCompleto(BuildContext context, ClienteGrid cliente) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => UniversalClienteDetalleDialog(
+        cliente: ClienteLocalAdapter(cliente, sucursalNombre),
+        provider: ClientesProviderAdapter(provider),
+      ),
+    );
+  }
+
+  void _mostrarOpcionesCliente(BuildContext context, ClienteGrid cliente) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => UniversalClienteOpcionesDialog(
+        cliente: ClienteLocalAdapter(cliente, sucursalNombre),
+      ),
+    );
+  }
+
+  void _mostrarOpcionesCompletas(BuildContext context, ClienteGrid cliente) {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) => UniversalClienteOpcionesDialog(
+        cliente: ClienteLocalAdapter(cliente, sucursalNombre),
       ),
     );
   }

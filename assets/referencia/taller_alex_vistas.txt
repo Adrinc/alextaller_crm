@@ -501,3 +501,34 @@ cliente_id (uuid)
 sucursal_id (uuid)
 sucursal_nombre (text)
 total_visitas (bigint)
+
+
+-- vw_inventario_caducidad --
+refaccion_id (uuid)
+sucursal_id (uuid)
+sucursal_nombre (text)
+sku (text)
+nombre (text)
+existencias (int)
+fecha_caducidad (date)
+dias_para_vencer (int)
+
+-- vw_inventario_resumen --
+sku (text)
+nombre (text)
+descripcion (text)
+proveedor (text)
+existencias_totales (bigint)
+minimo_alerta_global (bigint)
+posiciones_con_stock (bigint)
+sucursales_con_stock (bigint)
+
+-- vw_refacciones_rotacion_mensual --
+refaccion_id (uuid)
+sku (text)
+refaccion_nombre (text)
+sucursal_id (uuid)
+sucursal_nombre (text)
+periodo (date) (date_trunc('month'))
+qty_usada (numeric)
+ingresos_generados (numeric)
