@@ -20,6 +20,7 @@ import 'package:nethive_neo/providers/talleralex/citas_ordenes_provider.dart';
 import 'package:nethive_neo/providers/talleralex/inventario_provider.dart';
 import 'package:nethive_neo/providers/talleralex/pagos_provider.dart';
 import 'package:nethive_neo/providers/talleralex/promociones_provider.dart';
+import 'package:nethive_neo/providers/talleralex/promociones_globales_provider.dart';
 import 'package:nethive_neo/providers/talleralex/reportes_provider.dart';
 import 'package:nethive_neo/providers/talleralex/navigation_provider.dart';
 import 'package:nethive_neo/providers/talleralex/usuarios_pendientes_provider.dart';
@@ -70,6 +71,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => PagosProvider()),
         ChangeNotifierProvider(create: (_) => PromocionesProvider()),
         ChangeNotifierProvider(create: (_) => ReportesProvider()),
+        ChangeNotifierProvider(create: (_) => PromocionesGlobalesProvider()),
         ChangeNotifierProvider(create: (_) => TallerAlexNavigationProvider()),
         ChangeNotifierProvider(create: (_) => UsuariosPendientesProvider()),
         ChangeNotifierProvider(create: (_) => EmpleadosGlobalesProvider()),
