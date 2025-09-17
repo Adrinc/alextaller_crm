@@ -437,6 +437,28 @@ sucursal_nombre (text)
 created_at (timestamptz)
 updated_at (timestamptz)
 
+-- vw_promociones_activas (vista existente; sin cambios) --
+promocion_id (uuid) (FK → promociones.id)
+titulo (text)
+descripcion (text)
+tipo_descuento (taller_alex.tipo_descuento)
+valor_descuento (numeric)
+fecha_inicio (date)
+fecha_fin (date)
+activo (bool)
+condiciones_json (jsonb)
+sucursal_id (uuid) (FK → sucursales.id)
+
+-- vw_promociones_roi --
+promocion_id (uuid)
+titulo (text)
+canjes (bigint)
+clientes_unicos (bigint)
+descuento_total (numeric)
+ingreso_bruto (numeric)
+ingreso_neto (numeric)
+roi (numeric)
+
 
 -- vw_resumen_sucursal --
 
